@@ -1,2 +1,2 @@
-# Integra-o
+# Integração
 Equipa de Integração
