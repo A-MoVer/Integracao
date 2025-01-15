@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "IcAS8moI994=",
+  "success": true,
+  "projectFilePath": "/home/amover1/Documents/Git-Pedro/Simulador/SimuladorConsola/MqttConsoleClient/MqttConsoleClient.csproj",
+  "expectedPackageFiles": [
+    "/home/amover1/.nuget/packages/mqttnet/4.3.7.1207/mqttnet.4.3.7.1207.nupkg.sha512"
+  ],
+  "logs": []
+}
