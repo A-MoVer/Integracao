@@ -11,13 +11,19 @@ Este guia explica como utilizar as branches no projeto de forma simples e eficie
    - Contém o código **estável e em produção**.
    - **Regras:**
      - Não podes fazer commits diretos.
+     - Apenas código aprovado e testado chega aqui.
      - As versões são marcadas com **tags** (ex.: `v1.0.0`).
 
 2. **`develop`**
-   - Contém o código **em desenvolvimento**.
+   - Contém o código **em desenvolvimento contínuo**.
    - **Regras:**
-     - Todas as novas funcionalidades e correções são integradas aqui.
+     - Apenas funcionalidades e correções aprovadas na branch `testes` podem ser integradas.
      - Não podes fazer commits diretos.
+
+3. **`testes`**
+   - Contém o código **em validação**.
+   - **Regras:**
+     - Apenas funcionalidades e correções validadas passam para a branch `develop`.
 
 ---
 
@@ -44,9 +50,9 @@ Este guia explica como utilizar as branches no projeto de forma simples e eficie
      git add .
      git commit -m "Descrição da funcionalidade"
      ```
-  4. Faz o merge para a `develop`:
+  4. Faz o merge para a `testes`:
      ```bash
-     git checkout develop
+     git checkout testes
      git merge feature/<nome-da-funcionalidade>
      git branch -d feature/<nome-da-funcionalidade>
      ```
@@ -74,11 +80,28 @@ Este guia explica como utilizar as branches no projeto de forma simples e eficie
      git add .
      git commit -m "Descrição da correção"
      ```
-  4. Faz o merge para a `develop`:
+  4. Faz o merge para a `testes`:
      ```bash
-     git checkout develop
+     git checkout testes
      git merge bugfix/<descricao-do-bug>
      git branch -d bugfix/<descricao-do-bug>
      ```
+---
+
+## **Regras Importantes**
+
+1. **Nomes das Branches**:
+   - Usa nomes claros e descritivos:
+     - **Feature**: `feature/adicionar-login`
+     - **Bugfix**: `bugfix/corrigir-botao`
+
+2. **Commits**:
+   - Faz commits pequenos e claros.
+   - Exemplo:
+     ```bash
+     git commit -m "Adicionar funcionalidade de login"
+     ```
 
 ---
+
+Segue este guia para garantir um fluxo de trabalho organizado e eficiente.
