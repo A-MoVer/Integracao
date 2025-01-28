@@ -1,2 +1,0 @@
-# Integração
-Equipa de Integração
