@@ -11,7 +11,6 @@ Este guia explica como utilizar as branches no projeto de forma simples e eficie
    - Contém o código **estável e em produção**.
    - **Regras:**
      - Não podes fazer commits diretos.
-     - Apenas alterações aprovadas (via Pull Request) são mergeadas aqui.
      - As versões são marcadas com **tags** (ex.: `v1.0.0`).
 
 2. **`develop`**
