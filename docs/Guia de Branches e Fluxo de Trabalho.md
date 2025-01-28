@@ -83,16 +83,3 @@ Este guia explica como utilizar as branches no projeto de forma simples e eficie
      ```
 
 ---
-
-## **Gestão de Versões**
-
-1. Quando o código em `develop` estiver pronto para produção:
-   - Faz o merge para o `main`:
-     ```bash
-     git checkout main
-     git merge develop
-     ```
-2. Marca a versão com uma **tag**:
-   ```bash
-   git tag -a v<versao> -m "Descrição da versão"
-   git push origin v<versao>
