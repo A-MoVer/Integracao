@@ -10,7 +10,7 @@ namespace MQTTBroker
 {
     internal class Program
     {
-        private static int currentSpeed = 0;
+        private static int currentSpeed = 0;;
         private static int currentBattery = 100;
         private static double totalKilometers = 0.0;
 
