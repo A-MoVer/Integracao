@@ -1,14 +1,13 @@
-name: SonarQube Analysis
+name: CI/CD para Produção (Main)
 
 on:
-  pull_request:
+  push:
     branches:
       - main
-      - develop
 
 jobs:
   sonar:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
       - name: Checkout Código
@@ -32,7 +31,7 @@ jobs:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: |
           sonar-scanner \
-            -Dsonar.projectKey=meu-projeto \
+            -Dsonar.projectKey=AmoVer-integracao \
             -Dsonar.sources=. \
             -Dsonar.host.url=$SONAR_HOST_URL \
             -Dsonar.login=$SONAR_TOKEN
