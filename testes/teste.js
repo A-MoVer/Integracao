@@ -10,7 +10,7 @@ function dividirPorZero() {
 
 // Função que usa uma variável não utilizada
 function usarVariavelNaoUtilizada() {
-    let x = 10;  // A variável x não é utilizada
+    let y = 10;  // A variável x não é utilizada
 }
 
 // Função que usa um número mágico
