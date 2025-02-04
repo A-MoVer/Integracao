@@ -1,9 +1,11 @@
-name: SonarQube Analysis
+name: CI/CD para Desenvolvimento (Develop)
 
 on:
+  push:
+    branches:
+      - develop
   pull_request:
     branches:
-      - main
       - develop
 
 jobs:
