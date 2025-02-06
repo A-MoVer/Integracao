@@ -20,12 +20,11 @@ jobs:
 
       - name: Criar nova tag
         run: |
-          # Definir o número da versão
           VERSION="v$(date +'%Y.%m.%d')"
-          
-          # Criar a tag
           git tag $VERSION
-          git push origin $VERSION  # Push da tag para o repositório
+          git push https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/A-MoVer/Integracao.git $VERSION
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
           
       - name: Confirmar tag
         run: |
