@@ -22,10 +22,10 @@ jobs:
         run: |
           VERSION="v$(date +'%Y.%m.%d')"
           git tag $VERSION
-          git push https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/A-MoVer/Integracao.git $VERSION
+          git push origin $VERSION  # Usando a URL padrão sem o token diretamente
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-          
+
       - name: Confirmar tag
         run: |
           git tag
