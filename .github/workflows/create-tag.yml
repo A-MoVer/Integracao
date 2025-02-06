@@ -1,0 +1,32 @@
+name: Criar Tag de Versão
+
+on:
+  push:
+    branches:
+      - main  # O fluxo será ativado quando algo for feito na branch 'main'
+
+jobs:
+  create-tag:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v3
+
+      - name: Configurar Git
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+
+      - name: Criar nova tag
+        run: |
+          # Definir o número da versão
+          VERSION="v$(date +'%Y.%m.%d')"
+          
+          # Criar a tag
+          git tag $VERSION
+          git push origin $VERSION  # Push da tag para o repositório
+          
+      - name: Confirmar tag
+        run: |
+          git tag
