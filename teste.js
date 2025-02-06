@@ -1,6 +1,6 @@
 function exemploComErro() {
     let a = 5;
-    let b = 1;  // Alterei b de 0 para 1 para ver o comportamento
+    let b = 1;  // Alterei b de 0 para 1 para ver o comportamentoo
 
     let resultado = a / b;
 
