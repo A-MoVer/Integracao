@@ -18,7 +18,6 @@ Este guia explica como utilizar as branches no projeto de forma simples e eficie
    - Contém o código **em desenvolvimento contínuo**.
    - **Regras:**
      - Apenas funcionalidades e correções aprovadas na branch `testes` podem ser integradas.
-     - Não podes fazer commits diretos.
 
 3. **`testes`**
    - Contém o código **em validação**.
@@ -59,41 +58,11 @@ Este guia explica como utilizar as branches no projeto de forma simples e eficie
 
 ---
 
-### **Bugfix Branches**
-- **Para quê?**  
-  Corrigir erros encontrados durante o desenvolvimento.
-- **Como usar?**
-  1. Certifica-te que estás na branch `develop`:
-     ```bash
-     git checkout develop
-     ```
-  2. Cria a branch:
-     ```bash
-     git checkout -b bugfix/<descricao-do-bug>
-     ```
-     **Exemplo:**  
-     ```bash
-     git checkout -b bugfix/corrigir-botao
-     ```
-  3. Trabalha na correção e faz commits regulares:
-     ```bash
-     git add .
-     git commit -m "Descrição da correção"
-     ```
-  4. Faz o merge para a `testes`:
-     ```bash
-     git checkout testes
-     git merge bugfix/<descricao-do-bug>
-     git branch -d bugfix/<descricao-do-bug>
-     ```
----
-
 ## **Regras Importantes**
 
 1. **Nomes das Branches**:
    - Usa nomes claros e descritivos:
      - **Feature**: `feature/adicionar-login`
-     - **Bugfix**: `bugfix/corrigir-botao`
 
 2. **Commits**:
    - Faz commits pequenos e claros.
