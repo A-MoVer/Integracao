@@ -21,9 +21,9 @@ jobs:
 
       - name: Configurar SonarScanner
         run: |
-          wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2856-linux.zip
-          unzip sonar-scanner-cli-4.8.0.2856-linux.zip
-          export PATH=$PATH:$(pwd)/sonar-scanner-4.8.0.2856-linux/bin
+          curl -fsSL -o sonar-scanner-cli.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2856-linux.zip
+          unzip sonar-scanner-cli.zip
+          export PATH="$PWD/sonar-scanner-4.8.0.2856-linux/bin:$PATH"
 
       - name: Executar Análise SonarQube
         env:
