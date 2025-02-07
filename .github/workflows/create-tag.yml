@@ -4,7 +4,10 @@ on:
   push:
     branches:
       - main  # O fluxo será ativado quando algo for feito na branch 'main'
+<<<<<<< HEAD
 
+=======
+>>>>>>> a706e4743fef3bb159ed19422af688e8f0bb760f
 jobs:
   create-tag:
     runs-on: ubuntu-latest
