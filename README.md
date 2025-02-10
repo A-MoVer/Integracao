@@ -92,3 +92,8 @@ Quando o código em `develop` está pronto para produção:
    - Contém código pronto para produção.  
    - Tags de versão identificam cada release.
 
+```plaintext
+.github/workflows   # Pipelines de CI/CD
+docs/               # Documentação técnica
+README.md           # Informações gerais do projeto
+sonar-project.properties # Configuração do SonarQube
