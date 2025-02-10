@@ -6,9 +6,9 @@ Bem-vindo ao repositório **A-MoVer Integração**!
 
 ## 🚀 Funcionalidades
 
-- Análise contínua de código com **SonarQube**.
+- Análise automática e contínua de código . 
 - Integração com **GitHub Actions** para CI/CD.
-- Suporte para tags automáticas de versão.
+- Suporte para tags automáticas de versão na branch main.
 - Documentação detalhada no diretório `docs`.
 
 ---
