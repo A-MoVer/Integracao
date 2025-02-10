@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Lista de ficheiros que NÃO podem ser alterados
+FILES_BLOCKED="sonar-project.properties .github/workflows/"
+
+# Verificar se algum dos ficheiros bloqueados foi modificado
+for FILE in $FILES_BLOCKED; do
+  if git diff --cached --name-only | grep -q "$FILE"; then
+    echo "❌ ERRO: Não podes modificar o ficheiro $FILE diretamente!"
+    echo "🔒 Faz um Pull Request para revisão dos administradores."
+    exit 1  # Impede o commit
+  fi
+done
