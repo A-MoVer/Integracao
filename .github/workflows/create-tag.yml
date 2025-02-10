@@ -3,7 +3,7 @@ name: Criar Tag de Versão
 on:
   push:
     branches:
-      - main  # O fluxo será ativado quando algo for feito na branch 'main'  
+      - main  # O fluxo será ativado quando algo for feito na branch 'main'
 jobs:
   create-tag:
     runs-on: ubuntu-latest
