@@ -7,7 +7,6 @@ on:
   pull_request:
     branches:
       - develop
-
 jobs:
   sonar:
     runs-on: self-hosted
