@@ -1,23 +1,17 @@
-# A-MoVer Integração
+## Fluxo de Trabalho Git
 
-Bem-vindo ao repositório **A-MoVer Integração**!
+O projeto segue o fluxo **GitFlow** para garantir uma colaboração organizada. Aqui está a explicação de cada branch e como trabalhar nelas:
 
----
+### Branches Principais
+- **main**: Contém o código estável e pronto para produção.
+- **develop**: É onde ocorre o desenvolvimento ativo. O código nesta branch está sujeito a testes antes de ser integrado na `main`.
 
-## 🚀 Funcionalidades
+### Branches de Funcionalidade
+- **feature/nome-da-feature**: Usadas para desenvolver novas funcionalidades. São criadas a partir da branch `develop` e, ao finalizar, fazem merge de volta na `develop`.
 
-- Análise automática e contínua de código . 
-- Integração com **GitHub Actions** para CI/CD.
-- Suporte para tags automáticas de versão na branch main.
-- Documentação detalhada no diretório `docs`.
-
----
-
-## 📂 Estrutura do Projeto
-
-```plaintext
-.github/workflows   # Pipelines de CI/CD
-docs/               # Documentação técnica
-README.md           # Informações gerais do projeto
-sonar-project.properties # Configuração do SonarQube
-
+### Passos para Contribuir
+1. **Criar uma nova branch para uma funcionalidade:**
+   ```bash
+   git checkout develop
+   git pull origin develop
+   git checkout -b feature/nova-funcionalidade
