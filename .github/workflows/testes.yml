@@ -12,9 +12,6 @@ on:
       - develop
       - testes
       
-permissions:
-  contents: read
-
 jobs:
   sonar:
     runs-on: self-hosted
