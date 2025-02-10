@@ -97,3 +97,7 @@ Quando o código em `develop` está pronto para produção:
 docs/               # Documentação técnica
 README.md           # Informações gerais do projeto
 sonar-project.properties # Configuração do SonarQube
+````
+
+![Fluxograma do Fluxo de Trabalho Git](Integracao/images/diagram.png)
+
