@@ -99,5 +99,5 @@ README.md           # Informações gerais do projeto
 sonar-project.properties # Configuração do SonarQube
 ````
 
-![Fluxograma do Fluxo de Trabalho Git](Integracao/images/diagram.png)
+![Fluxograma do Fluxo de Trabalho Git](images/diagram.png)
 
