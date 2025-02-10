@@ -11,6 +11,9 @@ on:
       - main
       - develop
       - testes
+      
+permissions:
+  contents: read
 
 jobs:
   sonar:
