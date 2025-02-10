@@ -20,3 +20,12 @@ Bem-vindo ao repositório **A-MoVer Integração**!
 docs/               # Documentação técnica
 README.md           # Informações gerais do projeto
 sonar-project.properties # Configuração do SonarQube
+Teste normal
+Teste normal
+Teste normal
+Teste normal
+Teste normal
+Teste normal
+Teste normal
+Teste normal
+Teste normal
