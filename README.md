@@ -92,5 +92,5 @@ README.md           # Informações gerais do projeto
 sonar-project.properties 
 ````
 
-![Fluxograma do Fluxo de Trabalho Git](images/diagram.png)
+![Fluxograma do Fluxo de Trabalho Git](images/diagram (1).png)
 
