@@ -2,9 +2,6 @@
 
 ---
 
-
-![Fluxograma do Fluxo de Trabalho Git](images/diagrama.png)
-
 ## Fluxo Geral de Trabalho com Branches
 
 ### Branches Principais
@@ -95,4 +92,5 @@ README.md           # Informações gerais do projeto
 sonar-project.properties 
 ````
 
+![Fluxograma do Fluxo de Trabalho Git](images/diagram (1).png)
 
