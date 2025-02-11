@@ -1,42 +1,46 @@
 name: CI/CD Pipeline
 
 on:
-  push:
-    branches:
-      - develop
-      - main
   pull_request:
     branches:
-      - testes
-      - develop
+      - testes  # Executa apenas quando há um PR para 'testes'
 
 jobs:
-  sonar_analysis:
+  code_quality:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Código
         uses: actions/checkout@v3
 
-      - name: Configurar Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Configurar SonarScanner
+      - name: Executar Análise Codacy
         run: |
-          curl -fsSL -o sonar-scanner-cli.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2856-linux.zip
-          unzip sonar-scanner-cli.zip
-          export PATH="$PWD/sonar-scanner-4.8.0.2856-linux/bin:$PATH"
+          export CODACY_PROJECT_TOKEN=${{ secrets.CODACY_PROJECT_TOKEN }}
+          bash <(curl -Ls https://coverage.codacy.com/get.sh) report -l JavaScript
 
-      - name: Executar Análise SonarQube
+  auto_merge_testes:
+    needs: code_quality
+    if: success()
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Merge Automático para 'testes' se Codacy Aprovar
+        run: |
+          gh pr merge ${{ github.event.pull_request.html_url }} --auto --squash --admin
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  auto_merge_develop:
+    needs: auto_merge_testes
+    if: success()
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Merge Automático para 'develop' após 'testes'
         run: |
-          sonar-scanner \
-            -Dsonar.projectKey=AmoVer-integracao \
-            -Dsonar.sources=. \
-            -Dsonar.host.url=$SONAR_HOST_URL \
-            -Dsonar.login=$SONAR_TOKEN
+          git fetch origin
+          git checkout develop
+          git merge --no-ff testes -m 'Merge automático após testes'
+          git push origin develop
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
