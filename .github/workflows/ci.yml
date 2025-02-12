@@ -18,6 +18,40 @@ jobs:
           export CODACY_PROJECT_TOKEN=${{ secrets.CODACY_PROJECT_TOKEN }}
           bash <(curl -Ls https://coverage.codacy.com/get.sh) report -l JavaScript
 
+  notify_codacy_issues:
+    needs: code_quality
+    if: failure()
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Comentar no Pull Request com os Erros do Codacy
+        run: |
+          gh pr comment ${{ github.event.pull_request.html_url }} --body "
+          🚨 Foram encontrados problemas de qualidade no código pela análise do Codacy!
+
+          📌 Verifica os detalhes aqui: [Codacy Report](https://app.codacy.com/gh/A-MoVer/Integracao/issues)
+
+          ⚠️ Os desenvolvedores devem corrigir os problemas antes do merge para `testes`.
+          "
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  create_codacy_issue:
+    needs: code_quality
+    if: failure()
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Criar um Issue no GitHub com os Erros do Codacy
+        run: |
+          gh issue create --title "🚨 Problemas de Qualidade do Código no PR #${{ github.event.pull_request.number }}" \
+                          --body "O Codacy detetou problemas de qualidade no código.  
+                          📌 [Ver Relatório do Codacy](https://app.codacy.com/gh/A-MoVer/Integracao/issues)  
+                          ⚠️ Os desenvolvedores devem corrigir antes do merge para `testes`." \
+                          --label "Codacy Issues"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   auto_merge_testes:
     needs: code_quality
     if: success()
@@ -30,17 +64,18 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  auto_merge_develop:
+  notify_teams:
+    needs: [code_quality, auto_merge_testes]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enviar Notificação para Microsoft Teams
+        run: |
+          curl -H "Content-Type: application/json" -d '{"text": "🚨 O Codacy encontrou problemas de qualidade no código. Verifica os detalhes no relatório: https://app.codacy.com/gh/A-MoVer/Integracao/issues"}' "${{ secrets.TEAMS_WEBHOOK_URL }}"
+
+  require_approval_develop:
     needs: auto_merge_testes
-    if: success()
     runs-on: ubuntu-latest
 
     steps:
-      - name: Merge Automático para 'develop' após 'testes'
-        run: |
-          git fetch origin
-          git checkout develop
-          git merge --no-ff testes -m 'Merge automático após testes'
-          git push origin develop
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Requer Aprovação Manual para Merge em 'develop'
+        run: echo "🚀 Merge para 'develop' requer 2 aprovações antes de continuar."
