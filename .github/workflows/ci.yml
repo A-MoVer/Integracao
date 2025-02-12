@@ -1,4 +1,5 @@
-name: CI/CD Pipeline
+name: CI Pipeline
+
 on:
   pull_request:
     branches:
@@ -15,7 +16,7 @@ jobs:
       - name: Executar Análise Codacy
         run: |
           export CODACY_PROJECT_TOKEN=${{ secrets.CODACY_PROJECT_TOKEN }}
-          bash <(curl -Ls https://coverage.codacy.com/get.sh) report -l JavaScript
+          bash <(curl -Ls https://coverage.codacy.com/get.sh) analyze
 
   notify_codacy_issues:
     needs: code_quality
@@ -30,8 +31,7 @@ jobs:
 
           📌 Verifica os detalhes aqui: [Codacy Report](https://app.codacy.com/gh/A-MoVer/Integracao/issues)
 
-          ⚠️ Os desenvolvedores devem corrigir os problemas antes do merge para `testes`.
-          "
+          ⚠️ Os desenvolvedores devem corrigir os problemas antes do merge para `testes`."
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -59,22 +59,25 @@ jobs:
     steps:
       - name: Merge Automático para 'testes' se Codacy Aprovar
         run: |
-          gh pr merge ${{ github.event.pull_request.html_url }} --auto --squash --admin
+          gh pr merge ${{ github.event.pull_request.html_url }} --auto --squash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   notify_teams:
     needs: [code_quality, auto_merge_testes]
+    if: always()
     runs-on: ubuntu-latest
 
     steps:
-      - name: Enviar Notificação para Microsoft Teams
+      - name: Definir Mensagem de Notificação
         run: |
-          curl -H "Content-Type: application/json" -d '{
-            "text": "🚨 O Codacy encontrou problemas de qualidade no código!  
-            📌 Ver relatório: https://app.codacy.com/gh/A-MoVer/Integracao/issues  
-            ⚠️ Os desenvolvedores devem corrigir antes do merge para `testes`."
-          }' "${{ secrets.TEAMS_WEBHOOK_URL }}"
+          if [[ "${{ needs.code_quality.result }}" == "success" && "${{ needs.auto_merge_testes.result }}" == "success" ]]; then
+            MESSAGE="✅ O Codacy não encontrou problemas! O merge pode continuar."
+          else
+            MESSAGE="🚨 O Codacy encontrou problemas de qualidade no código! 📌 Ver relatório: https://app.codacy.com/gh/A-MoVer/Integracao/issues ⚠️ Os desenvolvedores devem corrigir antes do merge para 'testes'."
+          fi
+
+          curl -H "Content-Type: application/json" -d "{\"text\": \"$MESSAGE\"}" "${{ secrets.TEAMS_WEBHOOK_URL }}"
 
   require_approval_develop:
     needs: auto_merge_testes
