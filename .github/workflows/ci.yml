@@ -1,4 +1,5 @@
 name: CI Pipeline
+
 on:
   pull_request:
     branches:
@@ -11,17 +12,11 @@ jobs:
     steps:
       - name: Checkout Código
         uses: actions/checkout@v3
-        
-      - name: Instalar Dependências
-        run: npm install
-      
-      - name: Executar Testes e Gerar Relatório de Cobertura
-        run: npm test -- --coverage
 
       - name: Executar Análise Codacy
         run: |
           export CODACY_PROJECT_TOKEN=${{ secrets.CODACY_PROJECT_TOKEN }}
-          bash <(curl -Ls https://coverage.codacy.com/get.sh) report -l JavaScript
+          bash <(curl -Ls https://coverage.codacy.com/get.sh) analyze
 
   notify_codacy_issues:
     needs: code_quality
@@ -36,8 +31,7 @@ jobs:
 
           📌 Verifica os detalhes aqui: [Codacy Report](https://app.codacy.com/gh/A-MoVer/Integracao/issues)
 
-          ⚠️ Os desenvolvedores devem corrigir os problemas antes do merge para `testes`.
-          "
+          ⚠️ Os desenvolvedores devem corrigir os problemas antes do merge para `testes`."
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -78,13 +72,12 @@ jobs:
       - name: Definir Mensagem de Notificação
         run: |
           if [[ "${{ needs.code_quality.result }}" == "success" && "${{ needs.auto_merge_testes.result }}" == "success" ]]; then
-            MESSAGE="✅ Todos os testes passaram! O merge pode continuar."
+            MESSAGE="✅ O Codacy não encontrou problemas! O merge pode continuar."
           else
             MESSAGE="🚨 O Codacy encontrou problemas de qualidade no código! 📌 Ver relatório: https://app.codacy.com/gh/A-MoVer/Integracao/issues ⚠️ Os desenvolvedores devem corrigir antes do merge para 'testes'."
           fi
 
           curl -H "Content-Type: application/json" -d "{\"text\": \"$MESSAGE\"}" "${{ secrets.TEAMS_WEBHOOK_URL }}"
-
 
   require_approval_develop:
     needs: auto_merge_testes
