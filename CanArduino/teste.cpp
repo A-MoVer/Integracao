@@ -8,8 +8,6 @@ void exibirEstadoFormatado(const std::string &jsonString) {
     Json::Value dados;
     std::string erros;
 
-    //teste
-
     // Parse do JSON recebido
     std::istringstream entrada(jsonString);
     if (Json::parseFromStream(leitorJSON, entrada, &dados, &erros)) {
