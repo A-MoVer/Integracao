@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: CI Pipeline
 on:
   pull_request:
     branches:
@@ -65,16 +65,20 @@ jobs:
 
   notify_teams:
     needs: [code_quality, auto_merge_testes]
+    if: always()
     runs-on: ubuntu-latest
 
     steps:
-      - name: Enviar Notificação para Microsoft Teams
+      - name: Definir Mensagem de Notificação
         run: |
-          curl -H "Content-Type: application/json" -d '{
-            "text": "🚨 O Codacy encontrou problemas de qualidade no código!  
-            📌 Ver relatório: https://app.codacy.com/gh/A-MoVer/Integracao/issues  
-            ⚠️ Os desenvolvedores devem corrigir antes do merge para `testes`."
-          }' "${{ secrets.TEAMS_WEBHOOK_URL }}"
+          if [[ "${{ needs.code_quality.result }}" == "success" && "${{ needs.auto_merge_testes.result }}" == "success" ]]; then
+            MESSAGE="✅ Todos os testes passaram! O merge pode continuar."
+          else
+            MESSAGE="🚨 O Codacy encontrou problemas de qualidade no código! 📌 Ver relatório: https://app.codacy.com/gh/A-MoVer/Integracao/issues ⚠️ Os desenvolvedores devem corrigir antes do merge para 'testes'."
+          fi
+
+          curl -H "Content-Type: application/json" -d "{\"text\": \"$MESSAGE\"}" "${{ secrets.TEAMS_WEBHOOK_URL }}"
+
 
   require_approval_develop:
     needs: auto_merge_testes
