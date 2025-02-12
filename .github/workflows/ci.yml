@@ -11,6 +11,12 @@ jobs:
     steps:
       - name: Checkout Código
         uses: actions/checkout@v3
+        
+      - name: Instalar Dependências
+        run: npm install
+      
+      - name: Executar Testes e Gerar Relatório de Cobertura
+        run: npm test -- --coverage
 
       - name: Executar Análise Codacy
         run: |
