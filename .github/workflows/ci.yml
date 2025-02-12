@@ -59,10 +59,10 @@ jobs:
     steps:
       - name: Merge Automático para 'testes' se Codacy Aprovar
         run: |
-          gh pr merge ${{ github.event.pull_request.html_url }} --auto --squash --admin
+          gh pr merge ${{ github.event.pull_request.html_url }} --auto --squash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+          
   notify_teams:
     needs: [code_quality, auto_merge_testes]
     if: always()
