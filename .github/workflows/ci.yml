@@ -52,20 +52,6 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  notify_teams:
-    needs: [code_quality, auto_merge_testes]
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Enviar Notificação para Microsoft Teams
-        run: |
-          curl -H "Content-Type: application/json" -d '{
-            "text": "🚨 O Codacy encontrou problemas de qualidade no código!  
-            📌 Ver relatório: https://app.codacy.com/gh/A-MoVer/Integracao/issues  
-            ⚠️ Os desenvolvedores devem corrigir antes do merge para `testes`."
-          }' "${{ secrets.TEAMS_WEBHOOK_URL }}"
-
-
   auto_merge_testes:
     needs: code_quality
     if: success()
@@ -81,10 +67,15 @@ jobs:
   notify_teams:
     needs: [code_quality, auto_merge_testes]
     runs-on: ubuntu-latest
+
     steps:
       - name: Enviar Notificação para Microsoft Teams
         run: |
-          curl -H "Content-Type: application/json" -d '{"text": "🚨 O Codacy encontrou problemas de qualidade no código. Verifica os detalhes no relatório: https://app.codacy.com/gh/A-MoVer/Integracao/issues"}' "${{ secrets.TEAMS_WEBHOOK_URL }}"
+          curl -H "Content-Type: application/json" -d '{
+            "text": "🚨 O Codacy encontrou problemas de qualidade no código!  
+            📌 Ver relatório: https://app.codacy.com/gh/A-MoVer/Integracao/issues  
+            ⚠️ Os desenvolvedores devem corrigir antes do merge para `testes`."
+          }' "${{ secrets.TEAMS_WEBHOOK_URL }}"
 
   require_approval_develop:
     needs: auto_merge_testes
