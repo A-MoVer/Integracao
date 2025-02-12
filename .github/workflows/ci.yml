@@ -5,6 +5,10 @@ on:
     branches:
       - testes  # Executa apenas quando há um PR para 'testes'
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   code_quality:
     runs-on: ubuntu-latest
