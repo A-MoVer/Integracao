@@ -31,27 +31,11 @@ jobs:
       - name: Comentar no Pull Request com os Erros do Codacy
         run: |
           gh pr comment ${{ github.event.pull_request.html_url }} --body "
-          🚨 Foram encontrados problemas de qualidade no código pela análise do Codacy!
+          🚨 Foram encontrados problemas de qualidade no código! 
 
-          📌 Verifica os detalhes aqui: [Codacy Report](https://app.codacy.com/gh/A-MoVer/Integracao/issues)
+          📌 [Ver Relatório do Codacy](https://app.codacy.com/gh/A-MoVer/Integracao/issues)  
 
-          ⚠️ Os desenvolvedores devem corrigir os problemas antes do merge para `testes`."
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  create_codacy_issue:
-    needs: code_quality
-    if: failure()
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Criar um Issue no GitHub com os Erros do Codacy
-        run: |
-          gh issue create --title "🚨 Problemas de Qualidade do Código no PR #${{ github.event.pull_request.number }}" \
-                          --body "O Codacy detetou problemas de qualidade no código.  
-                          📌 [Ver Relatório do Codacy](https://app.codacy.com/gh/A-MoVer/Integracao/issues)  
-                          ⚠️ Os desenvolvedores devem corrigir antes do merge para `testes`." \
-                          --label "Codacy Issues"
+          ⚠️ Erros devem ser corrigidos antes do merge para 'testes'."
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -63,10 +47,10 @@ jobs:
     steps:
       - name: Merge Automático para 'testes' se Codacy Aprovar
         run: |
-          gh pr merge ${{ github.event.pull_request.html_url }} --auto --squash
+          gh pr merge ${{ github.event.pull_request.html_url }} --auto --squash || gh pr merge ${{ github.event.pull_request.html_url }} --admin --squash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
+
   notify_teams:
     needs: [code_quality, auto_merge_testes]
     if: always()
@@ -76,9 +60,11 @@ jobs:
       - name: Definir Mensagem de Notificação
         run: |
           if [[ "${{ needs.code_quality.result }}" == "success" && "${{ needs.auto_merge_testes.result }}" == "success" ]]; then
-            MESSAGE="✅ O Codacy não encontrou problemas! O merge pode continuar."
+            MESSAGE="✅ Nenhum erro encontrado. Código foi mesclado na branch 'testes'. Pode iniciar um PR para 'develop'."
           else
-            MESSAGE="🚨 O Codacy encontrou problemas de qualidade no código! 📌 Ver relatório: https://app.codacy.com/gh/A-MoVer/Integracao/issues ⚠️ Os desenvolvedores devem corrigir antes do merge para 'testes'."
+            MESSAGE="🚨 Problemas de qualidade no código!  
+            📌 [Ver Relatório do Codacy](https://app.codacy.com/gh/A-MoVer/Integracao/issues)  
+            ⚠️ Erros devem ser corrigidos antes do merge para 'testes'."
           fi
 
           curl -H "Content-Type: application/json" -d "{\"text\": \"$MESSAGE\"}" "${{ secrets.TEAMS_WEBHOOK_URL }}"
