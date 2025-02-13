@@ -68,20 +68,23 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
   notify_teams:
-    needs: [code_quality, auto_merge_testes]
-    if: always()
-    runs-on: ubuntu-latest
+        needs: [code_quality, auto_merge_testes]
+        if: always()
+        runs-on: ubuntu-latest
 
-    steps:
-      - name: Definir Mensagem de Notificação
-        run: |
-          if [[ "${{ needs.code_quality.result }}" == "success" && "${{ needs.auto_merge_testes.result }}" == "success" ]]; then
-            MESSAGE="✅ O Codacy não encontrou problemas! O merge pode continuar."
-          else
-            MESSAGE="🚨 O Codacy encontrou problemas de qualidade no código! 📌 Ver relatório: https://app.codacy.com/gh/A-MoVer/Integracao/issues ⚠️ Os desenvolvedores devem corrigir antes do merge para 'testes'."
-          fi
+        steps:
+        - name: Obter Autor do Pull Request
+          run: echo "PR_AUTHOR=${{ github.event.pull_request.user.login }}" >> $GITHUB_ENV
 
-          curl -H "Content-Type: application/json" -d "{\"text\": \"$MESSAGE\"}" "${{ secrets.TEAMS_WEBHOOK_URL }}"
+        - name: Definir Mensagem de Notificação
+          run: |
+            if [[ "${{ needs.code_quality.result }}" == "success" && "${{ needs.auto_merge_testes.result }}" == "success" ]]; then
+              MESSAGE="✅ O Codacy não encontrou problemas! O merge pode continuar. 🚀\n\n👤 Autor: $PR_AUTHOR"
+            else
+              MESSAGE="🚨 O Codacy encontrou problemas de qualidade no código! 📌 Ver relatório: https://app.codacy.com/gh/A-MoVer/Integracao/issues\n⚠️ Os desenvolvedores devem corrigir antes do merge para 'testes'.\n\n👤 Autor: $PR_AUTHOR"
+            fi
+
+            curl -H "Content-Type: application/json" -d "{\"text\": \"$MESSAGE\"}" "${{ secrets.TEAMS_WEBHOOK_URL }}"
 
   require_approval_develop:
     needs: auto_merge_testes
