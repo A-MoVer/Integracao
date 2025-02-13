@@ -63,13 +63,12 @@ jobs:
       - name: Definir Mensagem de Notificação
         run: |
           if [[ "${{ needs.code_quality.result }}" == "success" && "${{ needs.auto_merge_testes.result }}" == "success" ]]; then
-            MESSAGE="✅ O Codacy não encontrou problemas! O merge pode continuar. 🚀\n\n👤 Autor: $PR_AUTHOR"
+            MESSAGE="✅ Nenhum erro encontrado. Código foi mesclado na branch 'testes'. Pode iniciar um PR para 'develop'.\n👤 Autor: @${{ env.PR_AUTHOR }}"
           else
-            MESSAGE="🚨 O Codacy encontrou problemas de qualidade no código! 📌 Ver relatório: https://app.codacy.com/gh/A-MoVer/Integracao/issues\n⚠️ Os desenvolvedores devem corrigir antes do merge para 'testes'.\n\n👤 Autor: $PR_AUTHOR"
+            MESSAGE="🚨 O Codacy encontrou problemas de qualidade no código! 📌 Ver relatório: https://app.codacy.com/gh/A-MoVer/Integracao/issues\n⚠️ Os desenvolvedores devem corrigir antes do merge para 'testes'.\n👤 Autor: @${{ env.PR_AUTHOR }}"
           fi
 
           curl -H "Content-Type: application/json" -d "{\"text\": \"$MESSAGE\"}" "${{ secrets.TEAMS_WEBHOOK_URL }}"
-
 
   require_approval_develop:
     needs: auto_merge_testes
