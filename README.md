@@ -1,5 +1,7 @@
 # Fluxo de Trabalho Git
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/836af54cb2da4909a2d516cf50943d37)](https://app.codacy.com/gh/A-MoVer/Integracao?utm_source=github.com&utm_medium=referral&utm_content=A-MoVer/Integracao&utm_campaign=Badge_Grade)
+
 ---
 
 
