@@ -68,7 +68,7 @@ int openCAN(const char* ifname) {
     }
 
     struct ifreq ifr;
-    std::strncpy(ifr.ifr_name, ifname, sizeof(ifr.ifr_name) - 1);
+    std::snprintf(ifr.ifr_name, sizeof(ifr.ifr_name), "%s", ifname);
     ifr.ifr_name[sizeof(ifr.ifr_name) - 1] = '\0';
     if (ioctl(can_socket, SIOCGIFINDEX, &ifr) < 0) {
         std::cerr << "[ERRO] ioctl para interface CAN falhou!" << std::endl;
@@ -159,7 +159,7 @@ int main() {
     // Loop principal de leitura da porta serial
     while (g_running) {
         std::memset(buf, 0, sizeof(buf));
-        int n = read(g_fdSerial, buf, sizeof(buf));
+        int n = read(g_fdSerial, buf, std::min(sizeof(buf), static_cast<size_t>(MAX_READ_SIZE)));
         if (n > 0) {
             buffer.append(buf, n);
             // Processa cada linha completa (delimitada por '\n')

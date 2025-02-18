@@ -162,7 +162,7 @@ int openCAN(const char* ifname) {
     }
 
     struct ifreq ifr;
-    std::strncpy(ifr.ifr_name, ifname, sizeof(ifr.ifr_name) - 1);
+    std::snprintf(ifr.ifr_name, sizeof(ifr.ifr_name), "%s", ifname ? ifname : "");
     ifr.ifr_name[sizeof(ifr.ifr_name) - 1] = '\0';
     if (ioctl(can_socket, SIOCGIFINDEX, &ifr) < 0) {
         std::cerr << "[ERRO] ioctl para interface CAN falhou!" << std::endl;
@@ -186,7 +186,8 @@ int openCAN(const char* ifname) {
 void canReceiveThreadFunc() {
     struct can_frame frame;
     while (g_running) {
-        int n = read(g_canSocket, &frame, sizeof(frame));
+        int n = read(g_canSocket, &frame, sizeof(frame)); 
+        if (n != sizeof(frame)) continue;
         if (n == sizeof(frame)) {
             std::stringstream ss;
             ss << "CAN recebido: ID=0x" << std::hex << frame.can_id << " Dados: ";
