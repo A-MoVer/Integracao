@@ -187,15 +187,15 @@ void canReceiveThreadFunc() {
     struct can_frame frame;
     while (g_running) {
         int n = read(g_canSocket, &frame, sizeof(frame)); 
-        if (n < 0 || n != sizeof(frame)) continue;
         if (n != sizeof(frame)) continue;
-        if (n == sizeof(frame)) {
-            std::stringstream ss;
-            ss << "CAN recebido: ID=0x" << std::hex << frame.can_id << " Dados: ";
-            for (int i = 0; i < frame.can_dlc; i++) {
-                ss << std::hex << static_cast<int>(frame.data[i]) << " ";
-            }
-            lastCanMsg = ss.str();
+        
+        // process the frame
+        std::stringstream ss;
+        ss << "CAN recebido: ID=0x" << std::hex << frame.can_id << " Dados: ";
+        for (int i = 0; i < frame.can_dlc; i++) {
+            ss << std::hex << static_cast<int>(frame.data[i]) << " ";
+        }
+        lastCanMsg = ss.str();
 
             // Extrai a string dos dados e remove espaços extras
             std::string raw(reinterpret_cast<char*>(frame.data), frame.can_dlc);

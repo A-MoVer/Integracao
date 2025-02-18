@@ -159,7 +159,7 @@ int main() {
     // Loop principal de leitura da porta serial
     while (g_running) {
         std::memset(buf, 0, sizeof(buf));
-        int n = read(g_fdSerial, buf, std::min(BUF_SIZE, static_cast<size_t>(MAX_READ_SIZE))); 
+        int n = read(g_fdSerial, buf, std::min(BUF_SIZE, static_cast<size_t>(MAX_READ_SIZE)));
         if (n > 0) {
             buffer.append(buf, n);
             // Processa cada linha completa (delimitada por '\n')
