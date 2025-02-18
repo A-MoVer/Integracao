@@ -187,6 +187,7 @@ void canReceiveThreadFunc() {
     struct can_frame frame;
     while (g_running) {
         int n = read(g_canSocket, &frame, sizeof(frame)); 
+        if (n < 0 || n != sizeof(frame)) continue;
         if (n != sizeof(frame)) continue;
         if (n == sizeof(frame)) {
             std::stringstream ss;
