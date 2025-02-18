@@ -1,1 +1,9 @@
+g++ cansimular.cpp -o cansimular -lncurses -pthread
+
+g++ placaA.cpp -o placaA 
+
+g++ placaB.cpp -o placaB -lncurses -pthread
+
+
+
 g++ cansimular.cpp -o cansimular -pthread
