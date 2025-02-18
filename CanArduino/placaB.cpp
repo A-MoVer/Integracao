@@ -187,9 +187,13 @@ void canReceiveThreadFunc() {
     struct can_frame frame;
     while (g_running) {
         int n = read(g_canSocket, &frame, sizeof(frame)); 
-        if (n != sizeof(frame)) continue;
+        if (n != sizeof(frame)) {
+            std::cerr << "[ERRO] Read error: expected " << sizeof(frame)
+                      << " bytes but got " << n << std::endl;
+            continue;
+        }
         
-        // process the frame
+        // Process the frame
         std::stringstream ss;
         ss << "CAN recebido: ID=0x" << std::hex << frame.can_id << " Dados: ";
         for (int i = 0; i < frame.can_dlc; i++) {
