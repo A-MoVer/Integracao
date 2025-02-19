@@ -3,7 +3,7 @@ name: CI Pipeline
 on:
   pull_request:
     branches:
-      - testes  # Executa apenas quando há um PR para 'testes'
+      - '**' 
 
 permissions:
   contents: write
@@ -45,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Merge Automático para 'testes' se Codacy Aprovar
+      - name: Merge Automático para a Branch de Destino se Codacy Aprovar
         run: |
           gh pr merge ${{ github.event.pull_request.html_url }} --auto --squash || gh pr merge ${{ github.event.pull_request.html_url }} --admin --squash
         env:
@@ -59,12 +59,14 @@ jobs:
     steps:
       - name: Definir Mensagem de Notificação
         run: |
-          if [[ "${{ needs.code_quality.result }}" == "success" && "${{ needs.auto_merge_testes.result }}" == "success" ]]; then
-            MESSAGE="✅ Nenhum erro encontrado. Código foi mesclado na branch 'testes'. Pode iniciar um PR para 'develop'."
+          BRANCH="${{ github.event.pull_request.base.ref }}"
+          
+          if [[ "${{ needs.code_quality.result }}" == "success" && "${{ needs.auto_merge.result }}" == "success" ]]; then
+            MESSAGE="✅ Nenhum erro encontrado. Código foi mesclado na branch '$BRANCH'."
           else
-            MESSAGE="🚨 Problemas de qualidade no código!  
+            MESSAGE="🚨 Problemas de qualidade no código na branch '$BRANCH'!  
             📌 [Ver Relatório do Codacy](https://app.codacy.com/gh/A-MoVer/Integracao/issues)  
-            ⚠️ Erros devem ser corrigidos antes do merge para 'testes'."
+            ⚠️ Erros devem ser corrigidos antes do merge."
           fi
 
           curl -H "Content-Type: application/json" -d "{\"text\": \"$MESSAGE\"}" "${{ secrets.TEAMS_WEBHOOK_URL }}"
