@@ -3,7 +3,7 @@ name: CI Pipeline
 on:
   pull_request:
     branches:
-      - '**' 
+      - '**'
 
 permissions:
   contents: write
@@ -32,12 +32,13 @@ jobs:
     steps:
       - name: Comentar no Pull Request com os Erros do Codacy
         run: |
+          AUTHOR="${{ github.event.pull_request.user.login }}"
           gh pr comment ${{ github.event.pull_request.html_url }} --body "
-          🚨 Foram encontrados problemas de qualidade no código! 
+          🚨 Foram encontrados problemas de qualidade no código!  
 
           📌 [Ver Relatório do Codacy](https://app.codacy.com/gh/A-MoVer/Integracao/issues)  
 
-          ⚠️ Erros devem ser corrigidos antes do merge para 'testes'."
+          ⚠️ Erros devem ser corrigidos antes do merge. 👤 Autor: @$AUTHOR"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -62,13 +63,14 @@ jobs:
       - name: Definir Mensagem de Notificação
         run: |
           BRANCH="${{ github.event.pull_request.base.ref }}"
-          
-          if [[ "${{ needs.code_quality.result }}" == "success" && "${{ needs.auto_merge.result }}" == "success" ]]; then
-            MESSAGE="✅ Nenhum erro encontrado. Código foi mesclado na branch '$BRANCH'."
+          AUTHOR="${{ github.event.pull_request.user.login }}"
+
+          if [[ "${{ needs.code_quality.result }}" == "success" && "${{ needs.auto_merge_testes.result }}" == "success" ]]; then
+            MESSAGE="✅ Nenhum erro encontrado. Código foi mesclado na branch '$BRANCH'. 👤 Autor: @$AUTHOR"
           else
             MESSAGE="🚨 Problemas de qualidade no código na branch '$BRANCH'!  
             📌 [Ver Relatório do Codacy](https://app.codacy.com/gh/A-MoVer/Integracao/issues)  
-            ⚠️ Erros devem ser corrigidos antes do merge."
+            ⚠️ Erros devem ser corrigidos antes do merge. 👤 Autor: @$AUTHOR"
           fi
 
           curl -H "Content-Type: application/json" -d "{\"text\": \"$MESSAGE\"}" "${{ secrets.TEAMS_WEBHOOK_URL }}"
