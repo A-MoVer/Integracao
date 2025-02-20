@@ -1,0 +1,36 @@
+/home/amover1/Documents/Git-Pedro/FrontEnd Simulador/SimuladorConsola/MqttConsoleClient/bin/Debug/net8.0/MqttConsoleClient
+/home/amover1/Documents/Git-Pedro/FrontEnd Simulador/SimuladorConsola/MqttConsoleClient/bin/Debug/net8.0/MqttConsoleClient.deps.json
+/home/amover1/Documents/Git-Pedro/FrontEnd Simulador/SimuladorConsola/MqttConsoleClient/bin/Debug/net8.0/MqttConsoleClient.runtimeconfig.json
+/home/amover1/Documents/Git-Pedro/FrontEnd Simulador/SimuladorConsola/MqttConsoleClient/bin/Debug/net8.0/MqttConsoleClient.dll
+/home/amover1/Documents/Git-Pedro/FrontEnd Simulador/SimuladorConsola/MqttConsoleClient/bin/Debug/net8.0/MqttConsoleClient.pdb
+/home/amover1/Documents/Git-Pedro/FrontEnd Simulador/SimuladorConsola/MqttConsoleClient/bin/Debug/net8.0/MQTTnet.dll
+/home/amover1/Documents/Git-Pedro/FrontEnd Simulador/SimuladorConsola/MqttConsoleClient/obj/Debug/net8.0/MqttConsoleClient.csproj.AssemblyReference.cache
+/home/amover1/Documents/Git-Pedro/FrontEnd Simulador/SimuladorConsola/MqttConsoleClient/obj/Debug/net8.0/MqttConsoleClient.GeneratedMSBuildEditorConfig.editorconfig
+/home/amover1/Documents/Git-Pedro/FrontEnd Simulador/SimuladorConsola/MqttConsoleClient/obj/Debug/net8.0/MqttConsoleClient.AssemblyInfoInputs.cache
+/home/amover1/Documents/Git-Pedro/FrontEnd Simulador/SimuladorConsola/MqttConsoleClient/obj/Debug/net8.0/MqttConsoleClient.AssemblyInfo.cs
+/home/amover1/Documents/Git-Pedro/FrontEnd Simulador/SimuladorConsola/MqttConsoleClient/obj/Debug/net8.0/MqttConsoleClient.csproj.CoreCompileInputs.cache
+/home/amover1/Documents/Git-Pedro/FrontEnd Simulador/SimuladorConsola/MqttConsoleClient/obj/Debug/net8.0/MqttConsoleClient.sourcelink.json
+/home/amover1/Documents/Git-Pedro/FrontEnd Simulador/SimuladorConsola/MqttConsoleClient/obj/Debug/net8.0/MqttCons.DB35CE8A.Up2Date
+/home/amover1/Documents/Git-Pedro/FrontEnd Simulador/SimuladorConsola/MqttConsoleClient/obj/Debug/net8.0/MqttConsoleClient.dll
+/home/amover1/Documents/Git-Pedro/FrontEnd Simulador/SimuladorConsola/MqttConsoleClient/obj/Debug/net8.0/refint/MqttConsoleClient.dll
+/home/amover1/Documents/Git-Pedro/FrontEnd Simulador/SimuladorConsola/MqttConsoleClient/obj/Debug/net8.0/MqttConsoleClient.pdb
+/home/amover1/Documents/Git-Pedro/FrontEnd Simulador/SimuladorConsola/MqttConsoleClient/obj/Debug/net8.0/MqttConsoleClient.genruntimeconfig.cache
+/home/amover1/Documents/Git-Pedro/FrontEnd Simulador/SimuladorConsola/MqttConsoleClient/obj/Debug/net8.0/ref/MqttConsoleClient.dll
+/home/amover1/Documents/Git-Pedro/Simulador/SimuladorConsola/MqttConsoleClient/bin/Debug/net8.0/MqttConsoleClient
+/home/amover1/Documents/Git-Pedro/Simulador/SimuladorConsola/MqttConsoleClient/bin/Debug/net8.0/MqttConsoleClient.deps.json
+/home/amover1/Documents/Git-Pedro/Simulador/SimuladorConsola/MqttConsoleClient/bin/Debug/net8.0/MqttConsoleClient.runtimeconfig.json
+/home/amover1/Documents/Git-Pedro/Simulador/SimuladorConsola/MqttConsoleClient/bin/Debug/net8.0/MqttConsoleClient.dll
+/home/amover1/Documents/Git-Pedro/Simulador/SimuladorConsola/MqttConsoleClient/bin/Debug/net8.0/MqttConsoleClient.pdb
+/home/amover1/Documents/Git-Pedro/Simulador/SimuladorConsola/MqttConsoleClient/bin/Debug/net8.0/MQTTnet.dll
+/home/amover1/Documents/Git-Pedro/Simulador/SimuladorConsola/MqttConsoleClient/obj/Debug/net8.0/MqttConsoleClient.csproj.AssemblyReference.cache
+/home/amover1/Documents/Git-Pedro/Simulador/SimuladorConsola/MqttConsoleClient/obj/Debug/net8.0/MqttConsoleClient.GeneratedMSBuildEditorConfig.editorconfig
+/home/amover1/Documents/Git-Pedro/Simulador/SimuladorConsola/MqttConsoleClient/obj/Debug/net8.0/MqttConsoleClient.AssemblyInfoInputs.cache
+/home/amover1/Documents/Git-Pedro/Simulador/SimuladorConsola/MqttConsoleClient/obj/Debug/net8.0/MqttConsoleClient.AssemblyInfo.cs
+/home/amover1/Documents/Git-Pedro/Simulador/SimuladorConsola/MqttConsoleClient/obj/Debug/net8.0/MqttConsoleClient.csproj.CoreCompileInputs.cache
+/home/amover1/Documents/Git-Pedro/Simulador/SimuladorConsola/MqttConsoleClient/obj/Debug/net8.0/MqttConsoleClient.sourcelink.json
+/home/amover1/Documents/Git-Pedro/Simulador/SimuladorConsola/MqttConsoleClient/obj/Debug/net8.0/MqttCons.DB35CE8A.Up2Date
+/home/amover1/Documents/Git-Pedro/Simulador/SimuladorConsola/MqttConsoleClient/obj/Debug/net8.0/MqttConsoleClient.dll
+/home/amover1/Documents/Git-Pedro/Simulador/SimuladorConsola/MqttConsoleClient/obj/Debug/net8.0/refint/MqttConsoleClient.dll
+/home/amover1/Documents/Git-Pedro/Simulador/SimuladorConsola/MqttConsoleClient/obj/Debug/net8.0/MqttConsoleClient.pdb
+/home/amover1/Documents/Git-Pedro/Simulador/SimuladorConsola/MqttConsoleClient/obj/Debug/net8.0/MqttConsoleClient.genruntimeconfig.cache
+/home/amover1/Documents/Git-Pedro/Simulador/SimuladorConsola/MqttConsoleClient/obj/Debug/net8.0/ref/MqttConsoleClient.dll
