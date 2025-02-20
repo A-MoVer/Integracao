@@ -14,8 +14,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Código
+      - name: Checkout Código com Submódulos
         uses: actions/checkout@v3
+        with:
+          submodules: recursive
 
       - name: Executar Análise Codacy
         run: |
