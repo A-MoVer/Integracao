@@ -1,0 +1,408 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Portal de Receitas API",
+    "description": "API para receitas."
+  },
+  "host": "localhost:3000",
+  "basePath": "/",
+  "schemes": ["http"],
+  "paths": {
+    "/users": {
+      "get": {
+        "summary": "Listar utilizadores",
+        "tags": ["Users"],
+        "responses": {
+          "200": {
+            "description": "Lista de utilizadores",
+            "schema": { "type": "array", "items": { "$ref": "#/definitions/User" } }
+          }
+        }
+      },
+      "post": {
+        "summary": "Criar um novo utilizador",
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "user",
+            "required": true,
+            "schema": { "$ref": "#/definitions/UserInput" }
+          }
+        ],
+        "responses": {
+          "201": { "description": "Utilizador criado" },
+          "400": { "description": "Erro nos dados fornecidos" }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "summary": "Obter um utilizador específico",
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID do utilizador"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dados do utilizador retornados com sucesso",
+            "schema": { "$ref": "#/definitions/User" }
+          },
+          "404": { "description": "Utilizador não encontrado" },
+          "500": { "description": "Erro no servidor" }
+        }
+      },
+      "patch": {
+        "summary": "Atualizar um utilizador",
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID do utilizador"
+          },
+          {
+            "in": "body",
+            "name": "user",
+            "required": true,
+            "schema": { "$ref": "#/definitions/UserInput" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Utilizador atualizado com sucesso",
+            "schema": { "$ref": "#/definitions/User" }
+          },
+          "400": { "description": "Erro nos dados fornecidos" },
+          "404": { "description": "Utilizador não encontrado" }
+        }
+      },
+      "delete": {
+        "summary": "Excluir um utilizador",
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID do utilizador"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Utilizador excluído com sucesso" },
+          "404": { "description": "Utilizador não encontrado" },
+          "500": { "description": "Erro no servidor" }
+        }
+      }
+    },
+    "/receitas": {
+      "get": {
+        "summary": "Listar receitas",
+        "tags": ["Recipes"],
+        "responses": {
+          "200": {
+            "description": "Lista de receitas",
+            "schema": { "type": "array", "items": { "$ref": "#/definitions/Recipe" } }
+          }
+        }
+      },
+      "post": {
+        "summary": "Criar uma nova receita",
+        "tags": ["Recipes"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "recipe",
+            "required": true,
+            "schema": { "$ref": "#/definitions/Recipe" }
+          }
+        ],
+        "responses": {
+          "201": { "description": "Receita criada" }
+        }
+      }
+    },
+    "/receitas/{id}": {
+      "get": {
+        "summary": "Obter uma receita específica",
+        "tags": ["Recipes"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID da receita"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Receita específica",
+            "schema": { "$ref": "#/definitions/Recipe" }
+          },
+          "404": {
+            "description": "Receita não encontrada"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Atualizar uma receita",
+        "tags": ["Recipes"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID da receita"
+          },
+          {
+            "in": "body",
+            "name": "recipe",
+            "required": true,
+            "schema": { "$ref": "#/definitions/RecipeUpdate" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Receita atualizada",
+            "schema": { "$ref": "#/definitions/Recipe" }
+          },
+          "400": {
+            "description": "Erro de validação"
+          },
+          "404": {
+            "description": "Receita não encontrada"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Deletar uma receita",
+        "tags": ["Recipes"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID da receita"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Receita apagada com sucesso"
+          },
+          "404": {
+            "description": "Receita não encontrada"
+          }
+        }
+      }
+    },
+    "/receitas/chef_id/{chefe_id}": {
+      "get": {
+        "summary": "Obter todas as receitas de um chefe",
+        "tags": ["Recipes"],
+        "parameters": [
+          {
+            "name": "chefe_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID do chefe"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de receitas do chefe",
+            "schema": {
+              "type": "array",
+              "items": { "$ref": "#/definitions/Recipe" }
+            }
+          },
+          "404": {
+            "description": "Nenhuma receita encontrada para este chefe"
+          }
+        }
+      }
+    },
+    "/interactions": {
+      "get": {
+        "summary": "Listar todas as interações",
+        "tags": ["Interactions"],
+        "responses": {
+          "200": {
+            "description": "Lista de interações",
+            "schema": {
+              "type": "array",
+              "items": { "$ref": "#/definitions/Interaction" }
+            }
+          },
+          "500": { "description": "Erro no servidor" }
+        }
+      },
+      "post": {
+        "summary": "Criar uma nova interação",
+        "tags": ["Interactions"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "interaction",
+            "required": true,
+            "schema": { "$ref": "#/definitions/InteractionInput" }
+          }
+        ],
+        "responses": {
+          "201": { "description": "Interação criada com sucesso" },
+          "400": { "description": "Erro nos dados fornecidos" }
+        }
+      }
+    },
+    "/ratings": {
+      "get": {
+        "summary": "Get all ratings",
+        "description": "Retrieve all ratings with user and recipe details.",
+        "tags": ["Ratings"],
+        "responses": {
+          "200": {
+            "description": "List of ratings",
+            "schema": {
+              "type": "array",
+              "items": { "$ref": "#/definitions/Rating" }
+            }
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create or update a rating",
+        "description": "Create a new rating or update an existing one.",
+        "tags": ["Ratings"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/RatingInput" }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Rating created or updated",
+            "schema": { "$ref": "#/definitions/Rating" }
+          },
+          "400": {
+            "description": "Invalid input"
+          }
+        }
+      }
+    },
+    "/ratings/user/{userId}": {
+      "get": {
+        "summary": "Get ratings by user ID",
+        "description": "Retrieve all ratings for a specific user.",
+        "tags": ["Ratings"],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "description": "ID of the user",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ratings for the user",
+            "schema": {
+              "type": "array",
+              "items": { "$ref": "#/definitions/Rating" }
+            }
+          },
+          "404": {
+            "description": "No ratings found for this user"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/ratings/{id}": {
+      "patch": {
+        "summary": "Update a rating",
+        "description": "Update an existing rating by its ID.",
+        "tags": ["Ratings"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the rating to update",
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/RatingInput" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Updated rating",
+            "schema": { "$ref": "#/definitions/Rating" }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "Rating not found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a rating",
+        "description": "Delete an existing rating by its ID.",
+        "tags": ["Ratings"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the rating to delete",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Rating deleted",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": { "type": "string", "example": "Rating deleted" }
+              }
+            }
+          },
+          "404": {
+            "description": "Rating not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    }
+  }
+}
