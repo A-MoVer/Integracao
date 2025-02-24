@@ -8,7 +8,7 @@ using Simulador.Helpers;
 
 namespace Simulador
 {
-    // -------------------------------------------
+    // ------------------------------------------
     // Nova classe para representar cada segmento
     // -------------------------------------------
     public class RouteSegment
