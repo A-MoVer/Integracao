@@ -23,7 +23,7 @@ app.use(express.json());
 
 // Usar as rotas
 const receitasRouter = require('./routes/receitas');
-const usersRouter = require('./routes/users');
+import usersRouter from './routes/users';
 const interactionsRouter = require('./routes/interactions'); // Certifique-se de que está configurada corretamente
 
 app.use('/receitas', receitasRouter);
