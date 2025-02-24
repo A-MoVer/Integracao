@@ -18,6 +18,7 @@
 #include <locale>
 
 // Função trim para remover espaços
+//a
 static inline std::string trim(const std::string &s) {
     auto start = s.begin();
     while (start != s.end() && std::isspace(*start)) {
