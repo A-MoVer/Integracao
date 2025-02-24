@@ -3,7 +3,7 @@ name: CI Pipeline
 on:
   pull_request:
     branches:
-      - testes  # Executa apenas quando há um PR para 'testes'
+      - '**'
 
 permissions:
   contents: write
@@ -14,8 +14,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Código
+      - name: Checkout Código com Submódulos
         uses: actions/checkout@v3
+        with:
+          submodules: recursive
 
       - name: Executar Análise Codacy
         run: |
@@ -30,12 +32,13 @@ jobs:
     steps:
       - name: Comentar no Pull Request com os Erros do Codacy
         run: |
+          AUTHOR="${{ github.event.pull_request.user.login }}"
           gh pr comment ${{ github.event.pull_request.html_url }} --body "
-          🚨 Foram encontrados problemas de qualidade no código! 
+          🚨 Foram encontrados problemas de qualidade no código!  
 
           📌 [Ver Relatório do Codacy](https://app.codacy.com/gh/A-MoVer/Integracao/issues)  
 
-          ⚠️ Erros devem ser corrigidos antes do merge para 'testes'."
+          ⚠️ Erros devem ser corrigidos antes do merge. 👤 Autor: @$AUTHOR"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -45,7 +48,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Merge Automático para 'testes' se Codacy Aprovar
+      - name: Merge Automático para a Branch de Destino se Codacy Aprovar
         run: |
           gh pr merge ${{ github.event.pull_request.html_url }} --auto --squash || gh pr merge ${{ github.event.pull_request.html_url }} --admin --squash
         env:
@@ -57,15 +60,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Obter Autor do Pull Request
-        run: echo "PR_AUTHOR=${{ github.event.pull_request.user.login }}" >> $GITHUB_ENV
-
       - name: Definir Mensagem de Notificação
         run: |
+          BRANCH="${{ github.event.pull_request.base.ref }}"
+          AUTHOR="${{ github.event.pull_request.user.login }}"
+
           if [[ "${{ needs.code_quality.result }}" == "success" && "${{ needs.auto_merge_testes.result }}" == "success" ]]; then
-            MESSAGE="✅ Nenhum erro encontrado. Código foi mesclado na branch 'testes'. Pode iniciar um PR para 'develop'.\n👤 Autor: @${{ env.PR_AUTHOR }}"
+            MESSAGE="✅ Nenhum erro encontrado. Código foi mesclado na branch '$BRANCH'. 👤 Autor: @$AUTHOR"
           else
-            MESSAGE="🚨 O Codacy encontrou problemas de qualidade no código! 📌 Ver relatório: https://app.codacy.com/gh/A-MoVer/Integracao/issues\n⚠️ Os desenvolvedores devem corrigir antes do merge para 'testes'.\n👤 Autor: @${{ env.PR_AUTHOR }}"
+            MESSAGE="🚨 Problemas de qualidade no código na branch '$BRANCH'!  
+            📌 [Ver Relatório do Codacy](https://app.codacy.com/gh/A-MoVer/Integracao/issues)  
+            ⚠️ Erros devem ser corrigidos antes do merge. 👤 Autor: @$AUTHOR"
           fi
 
           curl -H "Content-Type: application/json" -d "{\"text\": \"$MESSAGE\"}" "${{ secrets.TEAMS_WEBHOOK_URL }}"
