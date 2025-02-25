@@ -44,8 +44,9 @@ jobs:
 
   auto_merge_testes:
     needs: code_quality
-    if: success()
+    if: needs.code_quality.result == 'success'
     runs-on: ubuntu-latest
+
 
     steps:
       - name: Merge Automático para a Branch de Destino se Codacy Aprovar
