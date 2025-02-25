@@ -1,0 +1,52 @@
+GET http://localhost:3000/receitas 
+
+###
+GET http://localhost:3000/receitas/674a632981c1c3001ad87a0a
+
+###
+POST http://localhost:3000/receitas
+Content-Type: application/json
+
+{
+  "title": "Chocolate",
+  "description": " chocolate.",
+  "chef_id": "674f83a2c7b180c4f5edb484",
+  "prep_time": 60,
+  "difficulty": "medium",
+  "image_url": "http://imagem-bolo.com/bolo.jpg",
+  "video_url": "http://video-bolo.com/bolo.mp4"
+}
+
+###
+DELETE http://localhost:3000/receitas/674a615327d83c17aee24dab
+
+###
+PATCH http://localhost:3000/receitas/674a615327d83c17aee24dab
+Content-Type: application/json
+
+{
+    "nome": "Torta"
+}
+
+###
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+    "name": "mqwe",
+    "email": "Chocolate",
+    "password":"12345",
+    "user_type": "guest"
+}
+
+###
+POST http://localhost:3000/recipetype
+Content-Type: application/json
+
+{
+    "id":"",
+    "type_name":"Bolos"
+}
+
+###
+GET http://localhost:3000/recipetype/67574712360e5e84b20567ef
