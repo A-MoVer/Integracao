@@ -12,17 +12,12 @@ permissions:
 jobs:
   code_quality:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Código com Submódulos
-        uses: actions/checkout@v3
-        with:
-          submodules: recursive
-
       - name: Executar Análise Codacy
         run: |
           export CODACY_PROJECT_TOKEN=${{ secrets.CODACY_PROJECT_TOKEN }}
-          bash <(curl -Ls https://coverage.codacy.com/get.sh) analyze --min-severity Medium
+          bash <(curl -Ls https://coverage.codacy.com/get.sh) analyze --min-severity Medium || exit 1
+
 
   notify_codacy_issues:
     needs: code_quality
