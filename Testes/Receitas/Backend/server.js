@@ -7,7 +7,7 @@ const swaggerDocument = require('./swagger.json');
 
 const app = express();
 
-// Conectar à base de dados
+// Conectar à base de dadosteste
 mongoose.connect(process.env.DB_URL, { 
   useNewUrlParser: true, 
   useUnifiedTopology: true 
