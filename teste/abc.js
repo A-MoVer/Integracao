@@ -1,6 +1,6 @@
 var userInput = "'; DROP TABLE users; --"; // 🚨 Simulação de SQL Injection
 
-// Função com risco de SQL Injection
+// sadasdasdadaFunção com risco de SQL Injection
 function getUserData(username) {
     var query = "SELECT * FROM users WHERE username = '" + username + "'"; // ❌ Concatenar strings é inseguro
     console.log("Executando query: " + query);
