@@ -1,4 +1,4 @@
-# Guia de Utilização de Branches
+# Guia de Utilização de branches
 
 Este guia explica como utilizar as branches no projeto de forma simples e eficiente. Segue estas instruções para manter o fluxo de trabalho organizado.
 
