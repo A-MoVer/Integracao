@@ -42,7 +42,7 @@ namespace Simulador.Services
             for (int i = 0; i < numMessages; i++)
             {
                 int currentDistance = initialDistance - (i * decrement);
-                if (currentDistance < 0) currentDistance = 0;
+                if (currentDistance < 0) { currentDistance = 0; } // Não permitir distância negativa
 
                 // Definir prioridade com base na distância
                 string priority;
