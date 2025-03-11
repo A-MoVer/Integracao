@@ -50,7 +50,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   notify_teams:
-    needs: [code_quality, auto_merge_testes]
+    needs: [code_quality, auto_merge_testes, notify_codacy_issues]
     if: always()
     runs-on: ubuntu-latest
 
