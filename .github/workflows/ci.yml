@@ -21,7 +21,7 @@ jobs:
 
   notify_codacy_issues:
     needs: code_quality
-    if: failure()
+    if: needs.code_quality.result == 'failure'
     runs-on: ubuntu-latest
 
     steps:
