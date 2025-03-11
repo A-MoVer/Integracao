@@ -20,7 +20,7 @@ namespace Simulador.Core
 
         private const int MIN_BATTERY = 0;
 
-        private Random rand = new Random();
+        private readonly Random rand = new Random();
 
 
 
