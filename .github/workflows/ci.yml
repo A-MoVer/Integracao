@@ -1,11 +1,9 @@
-name: CI Pipeline
-
+name: CI Pipelinee
 on:
   pull_request:
     branches:
       - '**'
-  workflow_dispatch:
-#teste
+
 permissions:
   contents: write
   pull-requests: write
@@ -13,21 +11,16 @@ permissions:
 jobs:
   code_quality:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Código com Submódulos
-        uses: actions/checkout@v3
-        with:
-          submodules: recursive
-
       - name: Executar Análise Codacy
         run: |
           export CODACY_PROJECT_TOKEN=${{ secrets.CODACY_PROJECT_TOKEN }}
-          bash <(curl -Ls https://coverage.codacy.com/get.sh) analyze --min-severity Medium
+          bash <(curl -Ls https://coverage.codacy.com/get.sh) analyze --min-severity Medium || exit 1
+
 
   notify_codacy_issues:
     needs: code_quality
-    if: failure()
+    if: needs.code_quality.result == 'failure'
     runs-on: ubuntu-latest
 
     steps:
@@ -45,8 +38,9 @@ jobs:
 
   auto_merge_testes:
     needs: code_quality
-    if: success()
+    if: needs.code_quality.result == 'success'
     runs-on: ubuntu-latest
+
 
     steps:
       - name: Merge Automático para a Branch de Destino se Codacy Aprovar
@@ -56,7 +50,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   notify_teams:
-    needs: [code_quality, auto_merge_testes]
+    needs: [code_quality, auto_merge_testes, notify_codacy_issues]
     if: always()
     runs-on: ubuntu-latest
 
