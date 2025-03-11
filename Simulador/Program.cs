@@ -9,6 +9,8 @@ using Simulador.Core;
 
 namespace Simulador
 {
+
+    //bora
     public class RouteSegment
     {
         public double LatStart { get; set; }
