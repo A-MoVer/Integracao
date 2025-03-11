@@ -34,3 +34,24 @@
 /home/amover1/Documents/Git-Pedro/Simulador/SimuladorConsola/MqttConsoleClient/obj/Debug/net8.0/MqttConsoleClient.pdb
 /home/amover1/Documents/Git-Pedro/Simulador/SimuladorConsola/MqttConsoleClient/obj/Debug/net8.0/MqttConsoleClient.genruntimeconfig.cache
 /home/amover1/Documents/Git-Pedro/Simulador/SimuladorConsola/MqttConsoleClient/obj/Debug/net8.0/ref/MqttConsoleClient.dll
+<<<<<<< HEAD
+=======
+C:\Users\Pedro Guimarães\Desktop\UTAD\Bolsa\Integracao_Git\Integracao\Simulador\bin\Debug\net8.0\MqttConsoleClient.exe
+C:\Users\Pedro Guimarães\Desktop\UTAD\Bolsa\Integracao_Git\Integracao\Simulador\bin\Debug\net8.0\MqttConsoleClient.deps.json
+C:\Users\Pedro Guimarães\Desktop\UTAD\Bolsa\Integracao_Git\Integracao\Simulador\bin\Debug\net8.0\MqttConsoleClient.runtimeconfig.json
+C:\Users\Pedro Guimarães\Desktop\UTAD\Bolsa\Integracao_Git\Integracao\Simulador\bin\Debug\net8.0\MqttConsoleClient.dll
+C:\Users\Pedro Guimarães\Desktop\UTAD\Bolsa\Integracao_Git\Integracao\Simulador\bin\Debug\net8.0\MqttConsoleClient.pdb
+C:\Users\Pedro Guimarães\Desktop\UTAD\Bolsa\Integracao_Git\Integracao\Simulador\bin\Debug\net8.0\MQTTnet.dll
+C:\Users\Pedro Guimarães\Desktop\UTAD\Bolsa\Integracao_Git\Integracao\Simulador\obj\Debug\net8.0\MqttConsoleClient.csproj.AssemblyReference.cache
+C:\Users\Pedro Guimarães\Desktop\UTAD\Bolsa\Integracao_Git\Integracao\Simulador\obj\Debug\net8.0\MqttConsoleClient.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Pedro Guimarães\Desktop\UTAD\Bolsa\Integracao_Git\Integracao\Simulador\obj\Debug\net8.0\MqttConsoleClient.AssemblyInfoInputs.cache
+C:\Users\Pedro Guimarães\Desktop\UTAD\Bolsa\Integracao_Git\Integracao\Simulador\obj\Debug\net8.0\MqttConsoleClient.AssemblyInfo.cs
+C:\Users\Pedro Guimarães\Desktop\UTAD\Bolsa\Integracao_Git\Integracao\Simulador\obj\Debug\net8.0\MqttConsoleClient.csproj.CoreCompileInputs.cache
+C:\Users\Pedro Guimarães\Desktop\UTAD\Bolsa\Integracao_Git\Integracao\Simulador\obj\Debug\net8.0\MqttConsoleClient.sourcelink.json
+C:\Users\Pedro Guimarães\Desktop\UTAD\Bolsa\Integracao_Git\Integracao\Simulador\obj\Debug\net8.0\MqttCons.DB35CE8A.Up2Date
+C:\Users\Pedro Guimarães\Desktop\UTAD\Bolsa\Integracao_Git\Integracao\Simulador\obj\Debug\net8.0\MqttConsoleClient.dll
+C:\Users\Pedro Guimarães\Desktop\UTAD\Bolsa\Integracao_Git\Integracao\Simulador\obj\Debug\net8.0\refint\MqttConsoleClient.dll
+C:\Users\Pedro Guimarães\Desktop\UTAD\Bolsa\Integracao_Git\Integracao\Simulador\obj\Debug\net8.0\MqttConsoleClient.pdb
+C:\Users\Pedro Guimarães\Desktop\UTAD\Bolsa\Integracao_Git\Integracao\Simulador\obj\Debug\net8.0\MqttConsoleClient.genruntimeconfig.cache
+C:\Users\Pedro Guimarães\Desktop\UTAD\Bolsa\Integracao_Git\Integracao\Simulador\obj\Debug\net8.0\ref\MqttConsoleClient.dll
+>>>>>>> tijo

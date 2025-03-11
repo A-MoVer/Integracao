@@ -1,5 +1,4 @@
-name: CI Pipeline
-
+name: CI Pipelinee
 on:
   pull_request:
     branches:
@@ -21,7 +20,7 @@ jobs:
 
   notify_codacy_issues:
     needs: code_quality
-    if: failure()
+    if: needs.code_quality.result == 'failure'
     runs-on: ubuntu-latest
 
     steps:
@@ -51,7 +50,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   notify_teams:
-    needs: [code_quality, auto_merge_testes]
+    needs: [code_quality, auto_merge_testes, notify_codacy_issues]
     if: always()
     runs-on: ubuntu-latest
 
