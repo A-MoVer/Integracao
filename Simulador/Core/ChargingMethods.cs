@@ -11,7 +11,7 @@ namespace Simulador.Core
         private readonly MqttService _mqttService;
         private readonly LoggingService _loggingService;
         private readonly Dashboard _dashboard;
-        private static int _lastBatteryPublished = SimulationState.Battery;
+        private int _lastBatteryPublished = SimulationState.Battery;
 
         private const int MAX_BATTERY = 100;
 
@@ -66,7 +66,6 @@ namespace Simulador.Core
                             _lastBatteryPublished = SimulationState.Battery;
                             await _mqttService.PublishAsync("sim/battery", SimulationState.Battery.ToString());
                             _dashboard.DisplayCommands();
-                            //Console.WriteLine($"Bateria carregada para {_battery}%.");
 
                             _loggingService.AddPerformanceLog(CreateLogEntry());
                         }

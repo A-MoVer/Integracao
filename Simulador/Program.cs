@@ -21,7 +21,7 @@ namespace Simulador
         public double Slope { get; set; } // já existente
     }
 
-    class Program
+    static class Program
     {
         // Mapeamento dos sensores para ArbitrationId e AlgorithmID
         private static readonly Dictionary<string, (int ArbitrationId, string AlgorithmID)> sensorMappings
@@ -167,7 +167,9 @@ namespace Simulador
                                 dashboard.DisplayDashboard();
                             }
                             else
+                            {
                                 Console.WriteLine("Uso: charge start | charge stop");
+                            }
                         }
                         else
                         {

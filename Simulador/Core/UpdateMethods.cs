@@ -30,7 +30,7 @@ namespace Simulador.Core
         private const int MAX_TEMPERATURE = 100;
         private const int MIN_TEMPERATURE = -50;
 
-        private static int _previousSpeed = 0;
+        private int _previousSpeed = 0;
 
         private static readonly object _consoleLock = new object();
 
@@ -341,9 +341,13 @@ namespace Simulador.Core
             state = state.ToLower();
             bool newMax;
             if (state == "on")
+            {
                 newMax = true;
+            }
             else if (state == "off")
+            {
                 newMax = false;
+            }
             else
             {
                 Console.WriteLine("Uso: maxlights on | maxlights off");
@@ -360,9 +364,13 @@ namespace Simulador.Core
             state = state.ToLower();
             bool newDanger;
             if (state == "on")
+            {
                 newDanger = true;
+            }
             else if (state == "off")
+            {
                 newDanger = false;
+            }
             else
             {
                 Console.WriteLine("Uso: danger on | danger off");

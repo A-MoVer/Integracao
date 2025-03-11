@@ -21,11 +21,11 @@ namespace Simulador.Core
             _dashboard = dashboard;
         }
 
-        private static int _lastSpeedPublished = SimulationState.Speed;
+        private int _lastSpeedPublished = SimulationState.Speed;
 
-        private static int _lastBatteryPublished = SimulationState.Battery;
+        private int _lastBatteryPublished = SimulationState.Battery;
 
-        private static int _lastTemperaturePublished = SimulationState.Temperature;
+        private int _lastTemperaturePublished = SimulationState.Temperature;
 
         private const int MAX_SPEED = 200;
         private const int MIN_SPEED = 0;
@@ -46,8 +46,7 @@ namespace Simulador.Core
             await _mqttService.PublishAsync("sim/autonomy", SimulationState.Autonomy.ToString("F2"));
         }
 
-        // Crie uma instância compartilhada de Random para evitar que seja reinicializada a cada chamada
-        static Random _rand = new Random();
+        private static Random _rand = new Random();
 
         public async Task ApplyAccelerationAsync(int targetSpeed)
         {
@@ -102,7 +101,6 @@ namespace Simulador.Core
                     _lastSpeedPublished = SimulationState.Speed;
                     _dashboard.DisplayDashboard();
                     await _mqttService.PublishAsync("sim/speed", SimulationState.Speed.ToString());
-                    //Console.WriteLine($"Velocidade atualizada para {_speed} km/h.");
                     var logEntry = CreateLogEntry();
                     _loggingService.AddPerformanceLog(logEntry);
                 }

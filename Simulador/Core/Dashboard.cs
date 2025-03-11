@@ -14,7 +14,7 @@ namespace Simulador.Core
         private static int DashboardStartRow = 0;
         private static int DashboardHeight = 10;
 
-        private static int RestrictionsStartRow;
+        private static int RestrictionsStartRow = 0;
         private static int RestrictionsHeight = 4; // ajuste conforme desejar
         private static int PromptRow; // Ex: 21 (ou use Console.WindowHeight - 1)
 

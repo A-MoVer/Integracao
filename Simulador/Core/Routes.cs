@@ -21,23 +21,22 @@ namespace Simulador.Core
 
         private readonly Auxiliares _auxiliares;
 
-        public CancellationTokenSource? _cts;
+        private CancellationTokenSource? _cts;
 
         public bool _isRouteActive = false;
 
         public string _activeRouteName = string.Empty;
 
-        private static List<(double Lat, double Lng)> _currentRoute = new List<(double, double)>();
+        private List<(double Lat, double Lng)> _currentRoute = new List<(double, double)>();
 
-        private static int _currentRouteIndex = 0; // Mantido para não alterar interface
 
         public List<RouteSegment> _currentRouteSegments = new List<RouteSegment>();
 
         public int _segmentIndex = 0;
-        private static double _distanceInSegment = 0.0; // em km
+        private double _distanceInSegment = 0.0; // em km
 
-        private static bool _accidentTriggered = false;
-        static Random _rand = new Random();
+        private bool _accidentTriggered = false;
+        private static Random _rand = new Random();
 
         private const int MAX_SPEED = 200;
 
@@ -57,7 +56,7 @@ namespace Simulador.Core
             { "rota3", (70, 5.0, 1.3) }
         };
 
-        public readonly Dictionary<string, List<(double, double)>> _routes
+        private readonly Dictionary<string, List<(double, double)>> _routes
             = new Dictionary<string, List<(double, double)>>(StringComparer.OrdinalIgnoreCase)
         {
             {
@@ -170,7 +169,6 @@ namespace Simulador.Core
             _activeRouteName = routeName.ToLower();
             // Carregamos a rota (lista de pontos) e convertendo para segmentos
             _currentRoute = _routes[routeName];
-            _currentRouteIndex = 0; // por compatibilidade com a interface existente
             _currentRouteSegments = BuildRouteSegments(_currentRoute, routeName);
             _isRouteActive = true;
             // Reiniciamos os controles de segmentação
@@ -247,7 +245,7 @@ namespace Simulador.Core
         }
 
 
-        public double GenerateRandomSlope(double min, double max)
+        private double GenerateRandomSlope(double min, double max)
         {
             var rand = new Random();
             return rand.NextDouble() * (max - min) + min;

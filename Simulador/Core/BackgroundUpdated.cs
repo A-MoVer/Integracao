@@ -16,9 +16,11 @@ namespace Simulador.Core
         private readonly Dashboard _dashboard;
 
         private readonly Routes _routes;
-        public CancellationTokenSource? _cts;
+        private CancellationTokenSource? _cts;
 
         private const int MIN_BATTERY = 0;
+
+        private Random rand = new Random();
 
 
 
@@ -261,8 +263,6 @@ namespace Simulador.Core
         // Método para simular flutuações naturais na velocidade
         public async Task FluctuateSpeedAsync(CancellationToken cancellationToken)
         {
-            // Instância compartilhada de Random para gerar variações
-            Random rand = new Random();
 
             while (!cancellationToken.IsCancellationRequested)
             {
