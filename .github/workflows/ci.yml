@@ -1,4 +1,5 @@
-name: CI Pipelinee
+name: CI Pipeline
+
 on:
   pull_request:
     branches:
@@ -15,8 +16,16 @@ jobs:
       - name: Executar Análise Codacy
         run: |
           export CODACY_PROJECT_TOKEN=${{ secrets.CODACY_PROJECT_TOKEN }}
-          bash <(curl -Ls https://coverage.codacy.com/get.sh) analyze --min-severity Medium || exit 1
+          bash <(curl -Ls https://coverage.codacy.com/get.sh) analyze --min-severity Medium > codacy_output.txt || exit 1
 
+      - name: Verificar se há erros no relatório do Codacy
+        run: |
+          if grep -q "issue" codacy_output.txt; then
+            echo "❌ Foram encontrados erros no Codacy!"
+            exit 1
+          else
+            echo "✅ Nenhum erro crítico encontrado."
+          fi
 
   notify_codacy_issues:
     needs: code_quality
@@ -41,7 +50,6 @@ jobs:
     if: needs.code_quality.result == 'success'
     runs-on: ubuntu-latest
 
-
     steps:
       - name: Merge Automático para a Branch de Destino se Codacy Aprovar
         run: |
@@ -55,6 +63,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Verificar Webhook do Teams
+        run: echo "Webhook URL: ${{ secrets.TEAMS_WEBHOOK_URL }}"
+
       - name: Definir Mensagem de Notificação
         run: |
           BRANCH="${{ github.event.pull_request.base.ref }}"
@@ -63,12 +74,12 @@ jobs:
           if [[ "${{ needs.code_quality.result }}" == "success" && "${{ needs.auto_merge_testes.result }}" == "success" ]]; then
             MESSAGE="✅ Nenhum erro encontrado. Código foi mesclado na branch '$BRANCH'. 👤 Autor: @$AUTHOR"
           else
-            MESSAGE="🚨 Problemas de qualidade no código na branch '$BRANCH'!  
-            📌 [Ver Relatório do Codacy](https://app.codacy.com/gh/A-MoVer/Integracao/issues)  
-            ⚠️ Erros devem ser corrigidos antes do merge. 👤 Autor: @$AUTHOR"
+            MESSAGE="🚨 Problemas de qualidade no código na branch '$BRANCH'! 📌 [Ver Relatório do Codacy](https://app.codacy.com/gh/A-MoVer/Integracao/issues) ⚠️ Erros devem ser corrigidos antes do merge. 👤 Autor: @$AUTHOR"
           fi
 
-          curl -H "Content-Type: application/json" -d "{\"text\": \"$MESSAGE\"}" "${{ secrets.TEAMS_WEBHOOK_URL }}"
+          PAYLOAD=$(echo "{\"text\": \"$MESSAGE\"}" | jq -c .)
+
+          curl -H "Content-Type: application/json" -d "$PAYLOAD" "${{ secrets.TEAMS_WEBHOOK_URL }}"
 
   require_approval_develop:
     needs: auto_merge_testes
