@@ -64,7 +64,7 @@ jobs:
 
     steps:
       - name: Verificar Webhook do Teams
-        run: echo "Webhook URL: ${{ secrets.TEAMS_WEBHOOK_URL }}"
+        run: echo "Testando envio para o Microsoft Teams..."
 
       - name: Definir Mensagem de Notificação
         run: |
