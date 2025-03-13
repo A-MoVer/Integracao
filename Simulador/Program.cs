@@ -9,7 +9,6 @@ using Simulador.Core;
 
 namespace Simulador
 {
-
     public class RouteSegment
     {
         public double LatStart { get; set; }
