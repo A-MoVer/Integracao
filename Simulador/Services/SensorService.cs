@@ -10,6 +10,7 @@ namespace Simulador.Services
         private readonly Dictionary<string, (int ArbitrationId, string AlgorithmID)> _sensorMappings;
         private readonly MqttService _mqttService;
         private readonly LoggingService _loggingService;
+        private readonly Random _rand = new Random();
 
         public SensorService(
             Dictionary<string, (int ArbitrationId, string AlgorithmID)> sensorMappings,
@@ -21,45 +22,77 @@ namespace Simulador.Services
             _loggingService = loggingService;
         }
 
+        /// <summary>
+        /// Envia mensagens do sensor enquanto o perigo (distância medida) estiver abaixo de 100m.
+        /// Se a distância ultrapassar 100m, com 90% de chance o perigo cessa.
+        /// Caso ocorra uma colisão (distância = 0), o envio é interrompido imediatamente.
+        /// Ao final, envia uma mensagem final com status false.
+        /// </summary>
         public async Task SendSensorMessagesAsync(string sensorName)
         {
             if (!_sensorMappings.ContainsKey(sensorName))
             {
-                Console.WriteLine("Sensor não reconhecido. Sensores disponíveis: " + string.Join(", ", _sensorMappings.Keys));
+                Console.WriteLine("Sensor não reconhecido. Sensores disponíveis: " +
+                                  string.Join(", ", _sensorMappings.Keys));
                 return;
             }
 
             var (arbitrationId, algorithmID) = _sensorMappings[sensorName];
+            Console.WriteLine($"Iniciando envio de mensagens para o sensor '{sensorName}'...");
 
-            Console.WriteLine($"Enviando mensagens para o sensor '{sensorName}'...");
+            // Parâmetros dinâmicos:
+            // Para simular o perigo ativo, definimos uma distância inicial aleatória entre 40 e 60m
+            int currentDistance = _rand.Next(40, 61);
+            int messageCount = 0;
+            double errorProbability = 0.3;   // 30% de chance de inverter o status (falso-positivo/negativo)
+            double collisionProbability = 0.05; // 5% de chance de ocorrer colisão (distância = 0)
 
-            int initialDistance = 100; // Distância inicial em metros
-            int decrement = 10; // Redução de distância por mensagem
-            int numMessages = 10; // Número total de mensagens a serem enviadas
-
-            string side = "Left"; // Definir o lado, pode ser randomizado ou configurado
-
-
-            for (int i = 0; i < numMessages; i++)
+            // Loop: enquanto o perigo estiver ativo
+            while (true)
             {
-                int currentDistance = initialDistance - (i * decrement);
-                if (currentDistance < 0) { currentDistance = 0; } // Não permitir distância negativa
-                bool status = true; // Assume que há um perigo se a mensagem está sendo enviada
-                // Definir prioridade com base na distância
-                string priority;
+                messageCount++;
 
-                if (currentDistance > 150)
+                // Aplica um ruído (jitter) aleatório entre -3 e +3 metros à medição
+                int jitter = _rand.Next(-3, 4);
+                int measuredDistance = Math.Max(currentDistance + jitter, 0);
+
+                // A partir da segunda mensagem, com 10% de chance ocorre colisão (distância = 0)
+                if (messageCount >= 2 && _rand.NextDouble() < collisionProbability)
                 {
+                    measuredDistance = 0;
+                }
+
+                // Se ocorrer colisão, interrompe imediatamente
+                if (measuredDistance == 0)
+                {
+                    Console.WriteLine("Colisão detectada (distance = 0). Encerrando envio de mensagens.");
+                    break;
+                }
+
+                // Se a distância medida ultrapassar 100m, com 90% de chance o perigo termina
+                if (measuredDistance > 100)
+                {
+                    if (_rand.NextDouble() < 0.9)
+                    {
+                        Console.WriteLine("Distância acima de 100m detectada. Perigo cessou.");
+                        break;
+                    }
+                    // Caso contrário, continua enviando mesmo que a distância esteja acima de 100m
+                }
+
+                // Para o status: normalmente true, mas com chance de erro de 30%
+                bool status = true;
+                if (_rand.NextDouble() < errorProbability)
+                    status = !status;
+
+                // Define prioridade com base na distância (pode ser ajustada conforme o cenário)
+                string priority;
+                if (measuredDistance > 150)
                     priority = "0"; // Baixo risco
-                }
-                else if (currentDistance > 50)
-                {
+                else if (measuredDistance > 50)
                     priority = "1"; // Médio risco
-                }
                 else
-                {
                     priority = "2"; // Alto risco
-                }
 
                 var canMessage = new CanMessage
                 {
@@ -71,24 +104,23 @@ namespace Simulador.Services
                     }
                 };
 
-                canMessage.CAN_Message.Data[0] = status ? 1 : 0; // Status
-                canMessage.CAN_Message.Data[1] = currentDistance & 0xFF; // Distance low byte
-                canMessage.CAN_Message.Data[2] = (currentDistance >> 8) & 0xFF; // Distance high byte
+                canMessage.CAN_Message.Data[0] = status ? 1 : 0; // Status do sensor
+                canMessage.CAN_Message.Data[1] = measuredDistance & 0xFF; // Byte baixo da distância
+                canMessage.CAN_Message.Data[2] = (measuredDistance >> 8) & 0xFF; // Byte alto da distância
 
-                // Se o sensor requer informação sobre o lado (ex: BlindSpot)
+                // Se o sensor requer informação sobre o lado (ex: BlindSpotDetection)
                 if (algorithmID == "BlindSpotDetection")
                 {
-                    canMessage.CAN_Message.Data[3] = side == "Right" ? 1 : 0; // Side: 1 = Right, 0 = Left
+                    // Randomiza o lado entre Left e Right
+                    string side = _rand.NextDouble() < 0.5 ? "Left" : "Right";
+                    canMessage.CAN_Message.Data[3] = side == "Right" ? 1 : 0;
                 }
 
-                // Bytes 4-7 permanecem como 0 (dados extras)
-
+                // Bytes 4-7 permanecem 0.
                 string jsonPayload = System.Text.Json.JsonSerializer.Serialize(canMessage);
-                await _mqttService.PublishAsync("sim/canmessages", jsonPayload); // Enviando para "sim/canmessages"
+                await _mqttService.PublishAsync("sim/canmessages", jsonPayload);
+                Console.WriteLine($"Enviado: AlgorithmID={algorithmID}, Distance={measuredDistance}m, Priority={priority}, Status={status}");
 
-                Console.WriteLine($"Enviado: AlgorithmID={algorithmID}, Distance={currentDistance}m, Priority={priority}, Side={side}");
-
-                // Criar e adicionar um registro de log para a mensagem do sensor
                 var sensorLogEntry = new LogEntry
                 {
                     Timestamp = DateTime.Now,
@@ -102,13 +134,17 @@ namespace Simulador.Services
 
                 _loggingService.AddSensorLog(sensorLogEntry);
 
+                // Aguarda um intervalo aleatório entre 300 e 500 ms
+                int delayMs = _rand.Next(300, 501);
+                await Task.Delay(delayMs);
 
-                // Pequena pausa para simular envio rápido, mas controlado
-                await Task.Delay(400); // 200 ms entre mensagens
+                // Atualiza a distância para a próxima iteração:
+                // Simula o objeto se afastando lentamente: incremento aleatório entre 5 e 10 metros
+                int increment = _rand.Next(5, 11);
+                currentDistance += increment;
             }
 
-            // Após o loop de envio de mensagens
-            bool finalStatus = false;
+            // Fora do loop: enviar mensagem final com status false (indicando que o perigo cessou)
             var finalMessage = new CanMessage
             {
                 AlgorithmID = algorithmID,
@@ -118,25 +154,16 @@ namespace Simulador.Services
                     Data = new int[8]
                 }
             };
-
-            // Define o status como false (0)
-            finalMessage.CAN_Message.Data[0] = finalStatus ? 1 : 0;
-
-            // Se necessário, você pode definir outros dados (como distância ou lado) como 0
+            finalMessage.CAN_Message.Data[0] = 0; // Status false
             finalMessage.CAN_Message.Data[1] = 0;
             finalMessage.CAN_Message.Data[2] = 0;
-            // Por exemplo, para o lado, se for BlindSpot, defina como 0 (ou conforme sua lógica)
             if (algorithmID == "BlindSpotDetection")
             {
                 finalMessage.CAN_Message.Data[3] = 0;
             }
-
             string finalJson = System.Text.Json.JsonSerializer.Serialize(finalMessage);
             await _mqttService.PublishAsync("sim/canmessages", finalJson);
-
-            Console.WriteLine($"Enviado mensagem final com status: {finalStatus}");
-
-            //Console.WriteLine($"Status: {status}");
+            Console.WriteLine("Enviado mensagem final com status: false");
             Console.WriteLine($"Finalizado o envio de mensagens para o sensor '{sensorName}'.");
         }
     }
