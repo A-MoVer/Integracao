@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MqttConsoleClient")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+04c8c4527a24599ad12750c8472f76acb9e04df7")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5eeaba15d7213f7490ff3b257770c29da7ddd4f9")]
 [assembly: System.Reflection.AssemblyProductAttribute("MqttConsoleClient")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MqttConsoleClient")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

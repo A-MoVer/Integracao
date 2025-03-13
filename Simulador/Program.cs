@@ -10,7 +10,6 @@ using Simulador.Core;
 namespace Simulador
 {
 
-    //bora
     public class RouteSegment
     {
         public double LatStart { get; set; }
@@ -18,7 +17,6 @@ namespace Simulador
         public double LatEnd { get; set; }
         public double LngEnd { get; set; }
         public double Distance { get; set; } // em km
-        // Novo campo para direção (em graus, 0 a 360)
         public double Heading { get; set; }
         public double Slope { get; set; } // já existente
     }

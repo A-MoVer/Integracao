@@ -39,14 +39,14 @@ namespace Simulador.Services
 
             string side = "Left"; // Definir o lado, pode ser randomizado ou configurado
 
+
             for (int i = 0; i < numMessages; i++)
             {
                 int currentDistance = initialDistance - (i * decrement);
                 if (currentDistance < 0) { currentDistance = 0; } // Não permitir distância negativa
-
+                bool status = true; // Assume que há um perigo se a mensagem está sendo enviada
                 // Definir prioridade com base na distância
                 string priority;
-                bool status = true; // Assume que há um perigo se a mensagem está sendo enviada
 
                 if (currentDistance > 150)
                 {
@@ -102,10 +102,41 @@ namespace Simulador.Services
 
                 _loggingService.AddSensorLog(sensorLogEntry);
 
+
                 // Pequena pausa para simular envio rápido, mas controlado
                 await Task.Delay(400); // 200 ms entre mensagens
             }
 
+            // Após o loop de envio de mensagens
+            bool finalStatus = false;
+            var finalMessage = new CanMessage
+            {
+                AlgorithmID = algorithmID,
+                CAN_Message = new CanData
+                {
+                    ArbitrationId = arbitrationId,
+                    Data = new int[8]
+                }
+            };
+
+            // Define o status como false (0)
+            finalMessage.CAN_Message.Data[0] = finalStatus ? 1 : 0;
+
+            // Se necessário, você pode definir outros dados (como distância ou lado) como 0
+            finalMessage.CAN_Message.Data[1] = 0;
+            finalMessage.CAN_Message.Data[2] = 0;
+            // Por exemplo, para o lado, se for BlindSpot, defina como 0 (ou conforme sua lógica)
+            if (algorithmID == "BlindSpotDetection")
+            {
+                finalMessage.CAN_Message.Data[3] = 0;
+            }
+
+            string finalJson = System.Text.Json.JsonSerializer.Serialize(finalMessage);
+            await _mqttService.PublishAsync("sim/canmessages", finalJson);
+
+            Console.WriteLine($"Enviado mensagem final com status: {finalStatus}");
+
+            //Console.WriteLine($"Status: {status}");
             Console.WriteLine($"Finalizado o envio de mensagens para o sensor '{sensorName}'.");
         }
     }
