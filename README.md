@@ -39,8 +39,7 @@ Após implementar a funcionalidade, o desenvolvedor faz commit e push para o rep
 O desenvolvedor abre um Pull Request (PR) da branch `feature/<nome-da-funcionalidade>` para a branch `testes`.  
 
 4. **Revisão do PR**  
-   - **Se a análise passar**: O PR é aprovado e integrado na branch `testes`.  
-   - **Se a análise falhar**: O desenvolvedor é notificado (via GitHub Checks) e deve corrigir os problemas na branch `feature/<nome-da-funcionalidade>`:  
+   - **Se a análise falhar**: O desenvolvedor é notificado e deve corrigir os problemas na branch `feature/<nome-da-funcionalidade>`:  
      ```bash
      git checkout feature/<nome-da-funcionalidade>
      # Correções necessárias
@@ -48,9 +47,10 @@ O desenvolvedor abre um Pull Request (PR) da branch `feature/<nome-da-funcionali
      git commit -m "Corrigir problemas reportados"
      git push origin feature/<nome-da-funcionalidade>
      ```
+     Se aprovado: O PR é integrado na branch testes.
 
 5. **Integração na Branch `develop`**  
-Após validação na branch `testes`, o código é integrado na branch `develop`:  
+Após aprovação por dois desenvolvedores na branch `testes`, o código é integrado na branch `develop`:  
    ```bash
    git checkout develop
    git merge testes
@@ -58,7 +58,7 @@ Após validação na branch `testes`, o código é integrado na branch `develop`
    ```
 
 6. **Integração na Branch `main` e Criação de Tag**  
-Quando o código em `develop` está pronto para produção:  
+Quando o código em `develop` está pronto para produção e aprovado por dois revisores: 
    - Faz-se merge para `main`:  
      ```bash
      git checkout main
@@ -89,10 +89,9 @@ Quando o código em `develop` está pronto para produção:
 ```plaintext
 .github/workflows  
 .githooks           
-docs/               # Documentação técnica
-images/             # Imagens para documentação por exemplo.
+docs/               # Documentação técnica.
+images/             # Imagens para documentação.
 README.md           # Informações gerais do projeto
-sonar-project.properties 
 ````
 
 
