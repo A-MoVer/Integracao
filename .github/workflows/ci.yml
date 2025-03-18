@@ -57,9 +57,15 @@ jobs:
     steps:
       - name: Definir Mensagem de Notificação
         run: |
+          echo "Iniciando notificação do Teams..."
           BRANCH="${{ github.event.pull_request.base.ref }}"
           AUTHOR="${{ github.event.pull_request.user.login }}"
-
+          
+          echo "Branch: $BRANCH"
+          echo "Author: $AUTHOR"
+          echo "Code Quality Result: ${{ needs.code_quality.result }}"
+          echo "Auto Merge Result: ${{ needs.auto_merge_testes.result }}"
+          
           if [[ "${{ needs.code_quality.result }}" == "success" && "${{ needs.auto_merge_testes.result }}" == "success" ]]; then
             MESSAGE="✅ Nenhum erro encontrado. Código foi mesclado na branch '$BRANCH'. 👤 Autor: @$AUTHOR"
           else
@@ -68,7 +74,8 @@ jobs:
             ⚠️ Erros devem ser corrigidos antes do merge. 👤 Autor: @$AUTHOR"
           fi
 
-          curl -H "Content-Type: application/json" -d "{\"text\": \"$MESSAGE\"}" "${{ secrets.TEAMS_WEBHOOK_URL }}"
+          echo "Enviando notificação para o Teams..."
+          curl -v -H "Content-Type: application/json" -d "{\"text\": \"$MESSAGE\"}" "${{ secrets.TEAMS_WEBHOOK_URL }}"
 
   require_approval_develop:
     needs: auto_merge_testes
