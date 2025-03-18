@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,11 +8,7 @@ using Simulador.Helpers;
 
 namespace Simulador
 {
-<<<<<<< HEAD
-    // -------------------------------------------
-=======
     // ------------------------------------------
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
     // Nova classe para representar cada segmento
     // -------------------------------------------
     public class RouteSegment
@@ -44,12 +40,6 @@ namespace Simulador
         private static double _totalKilometers = 0.0;
         private static double _autonomy = 0.0;
 
-<<<<<<< HEAD
-        // >>> Estas variáveis eram usadas na versão anterior, deixei-as comentadas:
-        // private static int _currentSegmentIndex = 0;
-        // private static double _progressSegment = 0.0;
-=======
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
 
         // Novo estado para controlar se a motocicleta está ligada
         private static bool _isMotorcycleOn = false;
@@ -118,15 +108,9 @@ namespace Simulador
             }
         };
         // Exemplo de 3 rotas, cada uma com uma lista de coordenadas (Lat, Lng)
-<<<<<<< HEAD
-       private static readonly Dictionary<string, (int maxSpeed, double accelerationRate, double extraConsumption)> _routeConfigs
-            = new Dictionary<string, (int, double, double)>(StringComparer.OrdinalIgnoreCase)
-        {
-=======
         private static readonly Dictionary<string, (int maxSpeed, double accelerationRate, double extraConsumption)> _routeConfigs
              = new Dictionary<string, (int, double, double)>(StringComparer.OrdinalIgnoreCase)
          {
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
             // rota1 => zona urbana
             //   - maxSpeed = 50
             //   - aceleração suave => 3.0
@@ -144,11 +128,7 @@ namespace Simulador
             //   - aceleração média => 5.0
             //   - extraConsumption => 1.3 (ex.: 30% a mais)
             { "rota3", (70, 5.0, 1.3) }
-<<<<<<< HEAD
-        };
-=======
          };
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
 
         // Controla o estado da rota atual
         private static bool _isRouteActive = false;
@@ -171,21 +151,6 @@ namespace Simulador
                 // Adicione outros sensores conforme necessário
             };
 
-<<<<<<< HEAD
-        
-            private static double CalculateBearing(double lat1, double lon1, double lat2, double lon2)
-            {
-                double rlat1 = ToRadians(lat1);
-                double rlat2 = ToRadians(lat2);
-                double dLon = ToRadians(lon2 - lon1);
-
-                double y = Math.Sin(dLon) * Math.Cos(rlat2);
-                double x = Math.Cos(rlat1) * Math.Sin(rlat2) - Math.Sin(rlat1) * Math.Cos(rlat2) * Math.Cos(dLon);
-                double bearingRad = Math.Atan2(y, x);
-                double bearingDeg = (bearingRad * (180.0 / Math.PI) + 360) % 360;
-                return bearingDeg;
-            }
-=======
 
         private static double CalculateBearing(double lat1, double lon1, double lat2, double lon2)
         {
@@ -199,7 +164,6 @@ namespace Simulador
             double bearingDeg = (bearingRad * (180.0 / Math.PI) + 360) % 360;
             return bearingDeg;
         }
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
 
         // Token de cancelamento para tarefas assíncronas
         private static CancellationTokenSource? _cancellationTokenSource;
@@ -210,11 +174,7 @@ namespace Simulador
         private static int RestrictionsStartRow;
         private static int RestrictionsHeight = 4; // ajuste conforme desejar
         private static int PromptRow; // Ex: 21 (ou use Console.WindowHeight - 1)
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
 
         private static bool _isUserTyping = false;
 
@@ -251,11 +211,7 @@ namespace Simulador
             DashboardStartRow = 0;
             DashboardHeight = 10;
 
-<<<<<<< HEAD
-             // As restrições ficarão fixadas nas últimas 5 linhas (4 linhas para as restrições + 1 para o prompt)
-=======
             // As restrições ficarão fixadas nas últimas 5 linhas (4 linhas para as restrições + 1 para o prompt)
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
             PromptRow = Console.WindowHeight - 1; // última linha para o prompt
             RestrictionsStartRow = windowHeight - (RestrictionsHeight + 1); // logo acima do prompt
 
@@ -275,11 +231,7 @@ namespace Simulador
 
             // Consumo de bateria enquanto se conduz
             _ = UpdateBatteryConsumptionAsync(mqttService, loggingService, _cancellationTokenSource.Token);
-<<<<<<< HEAD
-            
-=======
 
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
 
             // >>> Nova tarefa: SIMULA ROTA (lógica mais realista)
             _ = UpdateRouteAsync(mqttService, loggingService, sensorService, _cancellationTokenSource.Token);
@@ -290,24 +242,6 @@ namespace Simulador
             // Após iniciar as outras tarefas, adicione:
             _ = FluctuateSpeedAsync(mqttService, _cancellationTokenSource.Token);
 
-<<<<<<< HEAD
-            //_ = UpdateDashboardAsync(_cancellationTokenSource.Token);
-
-
-
-
-            bool running = true;
-            while (running)
-            {
-                lock(_consoleLock){
-                    Console.SetCursorPosition(0, PromptRow);
-                    Console.Write(new string(' ', Console.WindowWidth));
-                    Console.SetCursorPosition(0, PromptRow);
-                    Console.Write("> "); 
-                }
-                var line = Console.ReadLine();
-                if (line == null) continue;
-=======
             bool running = true;
             while (running)
             {
@@ -320,7 +254,6 @@ namespace Simulador
                 }
                 var line = Console.ReadLine();
                 if (line == null) { continue; }
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
 
                 lock (_consoleLock)
                 {
@@ -332,21 +265,13 @@ namespace Simulador
                 }
 
                 var parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-<<<<<<< HEAD
-                if (parts.Length == 0) continue;
-=======
                 if (parts.Length == 0) { continue; }
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
 
                 switch (parts[0].ToLower())
                 {
                     case "start":
                         await StartMotorcycleAsync(mqttService, loggingService);
                         Console.Clear();
-<<<<<<< HEAD
-                        //DisplayDashboard();
-=======
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
                         break;
 
                     case "stop":
@@ -359,11 +284,6 @@ namespace Simulador
                         {
                             string chargeAction = parts[1].ToLower();
                             if (chargeAction == "start")
-<<<<<<< HEAD
-                                await StartChargingAsync(mqttService, loggingService);
-                            else if (chargeAction == "stop")
-                                await StopChargingAsync(mqttService, loggingService);
-=======
                             {
                                 await StartChargingAsync(mqttService, loggingService);
                             }
@@ -371,7 +291,6 @@ namespace Simulador
                             {
                                 await StopChargingAsync(mqttService, loggingService);
                             }
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
                             else
                                 Console.WriteLine("Uso: charge start | charge stop");
                         }
@@ -593,21 +512,13 @@ namespace Simulador
         // Método para desenhar o dashboard na região reservada (colunas 0 a 40)
         static void DisplayDashboard()
         {
-<<<<<<< HEAD
-            
-=======
 
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
             for (int i = DashboardStartRow; i < DashboardStartRow + DashboardHeight; i++)
             {
                 Console.SetCursorPosition(0, i);
                 Console.Write(new string(' ', Console.WindowWidth));
             }
-<<<<<<< HEAD
-            
-=======
 
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
             // Posiciona o cursor para escrever o dashboard
             Console.WriteLine("╔════════════════════════════════════════════════╗ ╔═════════════════════════════════════════════════════╗");
             Console.WriteLine("║     Simulador da Motocicleta                   ║ ║                      COMANDOS                       ║");
@@ -631,11 +542,7 @@ namespace Simulador
             Console.WriteLine("- Quando a marcha está em 'front', a velocidade só pode aumentar.");
             Console.WriteLine("- Quando a marcha está em 'back', a velocidade só pode diminuir.");
             Console.WriteLine("- Se estiver a carregar (charge start), não pode alterar velocidade ou marcha.");
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
         }
 
 
@@ -669,36 +576,6 @@ namespace Simulador
                 Console.SetCursorPosition(0, i);
                 Console.Write(new string(' ', Console.WindowWidth));
             }
-<<<<<<< HEAD
-            
-            Console.SetCursorPosition(0, RestrictionsStartRow);
-            //Console.Clear();
-            //Console.WriteLine("Comandos disponíveis:");
-
-           
-                // Comandos disponíveis quando a motocicleta está desligada
-                Console.WriteLine("Start:                   start");
-                Console.WriteLine("Carregar bateria:        charge start (caso deseje carregar com a moto desligada)");
-                Console.WriteLine("Sair do programa:        exit");
-            
-            
-                // Comandos disponíveis quando a motocicleta está ligada
-                /*Console.WriteLine("% da Bateria:            battery -<valor>");
-                Console.WriteLine("Velocidade:              speed +<valor> / speed -<valor>");
-                Console.WriteLine("Temperatura da moto:     temp +<valor> / temp -<valor>");
-                Console.WriteLine("Marcha:                  gear front / gear back / gear neutral / gear park");
-                Console.WriteLine("Piscas:                  indicator left / indicator right / indicator none");
-                Console.WriteLine("Luzes médias:            lights on / lights off");
-                Console.WriteLine("ABS:                     abs on / abs off");
-                Console.WriteLine("Modo de condução:        mode standard / mode eco / mode sport");
-                Console.WriteLine("Luzes máximas:           maxlights on / maxlights off");
-                Console.WriteLine("Luzes de Perigo:         danger on / danger off");
-                Console.WriteLine("Enviar Sensor:           send <sensor>");
-                Console.WriteLine("Carregar bateria:        charge start / charge stop");
-                Console.WriteLine("Stop:                    stop");
-                Console.WriteLine("Sair do programa:        exit");
-*/
-=======
 
             Console.SetCursorPosition(0, RestrictionsStartRow);
 
@@ -706,27 +583,10 @@ namespace Simulador
             Console.WriteLine("Start:                   start");
             Console.WriteLine("Carregar bateria:        charge start (caso deseje carregar com a moto desligada)");
             Console.WriteLine("Sair do programa:        exit");
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
 
             Console.WriteLine();
         }
 
-<<<<<<< HEAD
-
-        // static void DisplayRestrictions()
-        // {
-        //     for (int i = RestrictionsStartRow; i < RestrictionsStartRow + RestrictionsHeight; i++)
-        //     {
-        //         Console.SetCursorPosition(1, i);
-        //         Console.Write(new string(' ', Console.WindowWidth));
-        //     }
-
-        //         Console.SetCursorPosition(0, RestrictionsStartRow);
-                
-        // }
-
-=======
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
         #region Start and Stop Methods
 
         static async Task StartMotorcycleAsync(MqttService mqttService, LoggingService loggingService)
@@ -824,10 +684,6 @@ namespace Simulador
 
         static async Task UpdateChargingAsync(MqttService mqttService, LoggingService loggingService, CancellationToken cancellationToken)
         {
-<<<<<<< HEAD
-            //Console.WriteLine("Tarefa UpdateChargingAsync iniciada.");
-=======
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
             while (!cancellationToken.IsCancellationRequested)
             {
                 try
@@ -854,10 +710,6 @@ namespace Simulador
                     break;
                 }
             }
-<<<<<<< HEAD
-            //Console.WriteLine("Tarefa UpdateChargingAsync encerrada.");
-=======
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
         }
 
         #endregion
@@ -939,11 +791,6 @@ namespace Simulador
                 // Definir slope: somente para rota3 (montanhosa)
                 double slopeValue = 0.0;
                 if (routeName.Equals("rota3", StringComparison.OrdinalIgnoreCase))
-<<<<<<< HEAD
-                    slopeValue = GenerateRandomSlope(-0.05, 0.10);
-                else
-                    slopeValue = 0.0;
-=======
                 {
                     slopeValue = GenerateRandomSlope(-0.05, 0.10); // entre -5% e +10%
                 }
@@ -951,7 +798,6 @@ namespace Simulador
                 {
                     slopeValue = 0.0;
                 }
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
 
                 segments.Add(new RouteSegment
                 {
@@ -1048,11 +894,6 @@ namespace Simulador
                             await mqttService.PublishAsync("sim/gps/latitude", lat.ToString("F6"));
                             await mqttService.PublishAsync("sim/gps/longitude", lng.ToString("F6"));
 
-<<<<<<< HEAD
-                            //Console.WriteLine($"[ROTA] seg={_segmentIndex}, dist={_distanceInSegment:F3}/{segment.Distance:F3} => Lat:{lat}, Lng:{lng}");
-
-=======
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
                             // -- Bloco de semáforo para rota1 --
                             if (_activeRouteName == "rota1")
                             {
@@ -1078,13 +919,8 @@ namespace Simulador
                                 double currentHeading = segment.Heading;
                                 double nextHeading = _currentRouteSegments[_segmentIndex + 1].Heading;
                                 double angleDiff = nextHeading - currentHeading;
-<<<<<<< HEAD
-                                if (angleDiff > 180) angleDiff -= 360;
-                                if (angleDiff < -180) angleDiff += 360;
-=======
                                 if (angleDiff > 180) { angleDiff -= 360; }
                                 if (angleDiff < -180) { angleDiff += 360; }
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
 
                                 if (Math.Abs(angleDiff) >= 20 && fraction >= 0.8)
                                 {
@@ -1109,40 +945,19 @@ namespace Simulador
                                 }
                             }
                         }
-<<<<<<< HEAD
-                      
-                    }
-                    // Aguarda 1 segundo antes de repetir o ciclo
-                    await Task.Delay(1000, cancellationToken);
-                    
-=======
 
                     }
                     // Aguarda 1 segundo antes de repetir o ciclo
                     await Task.Delay(1000, cancellationToken);
 
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
                 }
                 catch (TaskCanceledException)
                 {
                     break;
                 }
-<<<<<<< HEAD
-                
-            }
-
-           
-
-            //Console.WriteLine("Tarefa UpdateRouteAsync encerrada.");
-        }
-
-
-
-=======
             }
         }
 
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
         #endregion
 
         #region Update Methods (Battery, Speed, etc.)
@@ -1161,11 +976,7 @@ namespace Simulador
                     // Evita que o dashboard limpe o prompt ao atualizar
                     if (_isMotorcycleOn)
                     {
-<<<<<<< HEAD
-                        
-=======
 
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
                         DisplayDashboard();
                     }
 
@@ -1174,11 +985,7 @@ namespace Simulador
                 }
                 await Task.Delay(500, cancellationToken);
             }
-<<<<<<< HEAD
-            
-=======
 
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
         }
 
 
@@ -1255,11 +1062,7 @@ namespace Simulador
                                     $"Forçando {_speed} => {routeMaxSpeed}");
                     _speed = routeMaxSpeed;  // Reduz forçadamente
                     await mqttService.PublishAsync("sim/speed", _speed.ToString());
-<<<<<<< HEAD
-                    
-=======
 
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
 
                     var logEntry = new LogEntry
                     {
@@ -1389,11 +1192,6 @@ namespace Simulador
             state = state.ToLower();
             bool newLights;
             if (state == "on")
-<<<<<<< HEAD
-                newLights = true;
-            else if (state == "off")
-                newLights = false;
-=======
             {
                 newLights = true;
             }
@@ -1401,7 +1199,6 @@ namespace Simulador
             {
                 newLights = false;
             }
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
             else
             {
                 Console.WriteLine("Uso: lights on | lights off");
@@ -1525,15 +1322,9 @@ namespace Simulador
             double accelerationRate;
             switch (_driveMode.ToLower())
             {
-<<<<<<< HEAD
-                case "eco":   accelerationRate = 3.0;  break;
-                case "sport": accelerationRate = 8.0;  break;
-                default:      accelerationRate = 6.0;  break;
-=======
                 case "eco": accelerationRate = 3.0; break;
                 case "sport": accelerationRate = 8.0; break;
                 default: accelerationRate = 6.0; break;
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
             }
 
             int updateInterval = 200; // atualiza a cada 200 ms
@@ -1563,11 +1354,6 @@ namespace Simulador
 
                 // Se ultrapassar o target, força o target
                 if (isAccelerating && nextSpeed > targetSpeed)
-<<<<<<< HEAD
-                    nextSpeed = targetSpeed;
-                else if (!isAccelerating && nextSpeed < targetSpeed)
-                    nextSpeed = targetSpeed;
-=======
                 {
                     nextSpeed = targetSpeed;
                 }
@@ -1575,7 +1361,6 @@ namespace Simulador
                 {
                     nextSpeed = targetSpeed;
                 }
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
 
                 _speed = nextSpeed;
 
@@ -1590,13 +1375,9 @@ namespace Simulador
                 }
 
                 if (_speed == targetSpeed)
-<<<<<<< HEAD
-                    break;
-=======
                 {
                     break;
                 }
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
 
                 await Task.Delay(updateInterval);
             }
@@ -1738,11 +1519,7 @@ namespace Simulador
                 await UpdateGearAsync("front", mqttService, loggingService);
                 DisplayDashboard();
                 await Task.Delay(500, ct);
-<<<<<<< HEAD
-                
-=======
 
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
             }
 
             // 4. Liga luzes
@@ -1770,11 +1547,7 @@ namespace Simulador
                     : "-" + (_speed - desiredSpeed);
                 await UpdateSpeedAsync(speedCommand, mqttService, loggingService);
                 //DisplayDashboard();
-<<<<<<< HEAD
-                
-=======
 
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
             }
             else
             {
@@ -1788,32 +1561,20 @@ namespace Simulador
 
             // Ajusta modo de condução
             // Ex.: se for rota2, forçamos sport; se for rota1, forçamos eco; etc.
-<<<<<<< HEAD
-            if (routeName == "rota1") {
-=======
             if (routeName == "rota1")
             {
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
                 Console.WriteLine("[Auto] Rota1 => modo 'eco' (urbano)...");
                 await UpdateModeAsync("eco", mqttService, loggingService);
                 DisplayDashboard();
             }
-<<<<<<< HEAD
-            else if (routeName == "rota2") {
-=======
             else if (routeName == "rota2")
             {
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
                 Console.WriteLine("[Auto] Rota2 => modo 'sport' (autoestrada)...");
                 await UpdateModeAsync("sport", mqttService, loggingService);
                 DisplayDashboard();
             }
-<<<<<<< HEAD
-            else {
-=======
             else
             {
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
                 Console.WriteLine("[Auto] Rota3 => modo 'standard' (rural)...");
                 await UpdateModeAsync("standard", mqttService, loggingService);
                 DisplayDashboard();
@@ -1822,11 +1583,7 @@ namespace Simulador
             // Loop enquanto a rota estiver ativa
             while (_isRouteActive && !ct.IsCancellationRequested)
             {
-<<<<<<< HEAD
-                
-=======
 
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
                 // Exemplo: se a rota for rota2 (autoestrada), tenta manter velocidade alta
                 if (routeName == "rota2" && _speed < 80)
                 {
@@ -1854,15 +1611,9 @@ namespace Simulador
                     //DisplayDashboard();
                 }
 
-<<<<<<< HEAD
-               
-
-               
-=======
 
 
 
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
                 await Task.Delay(2000, ct);
             }
 
@@ -1877,10 +1628,6 @@ namespace Simulador
 
         static async Task UpdateTimeAsync(MqttService mqttService, LoggingService loggingService, CancellationToken cancellationToken)
         {
-<<<<<<< HEAD
-            //Console.WriteLine("Tarefa UpdateTimeAsync iniciada.");
-=======
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
             while (!cancellationToken.IsCancellationRequested)
             {
                 var currentTime = DateTime.Now.ToString("hh:mm tt");
@@ -1897,18 +1644,10 @@ namespace Simulador
                     break;
                 }
             }
-<<<<<<< HEAD
-            //Console.WriteLine("Tarefa UpdateTimeAsync encerrada.");
-=======
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
         }
 
         static async Task UpdateTotalKilometersAsync(MqttService mqttService, LoggingService loggingService, CancellationToken cancellationToken)
         {
-<<<<<<< HEAD
-            //Console.WriteLine("Tarefa UpdateTotalKilometersAsync iniciada.");
-=======
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
             while (!cancellationToken.IsCancellationRequested)
             {
                 if (_isMotorcycleOn)
@@ -1929,18 +1668,10 @@ namespace Simulador
                     break;
                 }
             }
-<<<<<<< HEAD
-            //Console.WriteLine("Tarefa UpdateTotalKilometersAsync encerrada.");
-=======
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
         }
 
         static async Task UpdateAutonomyAsync(MqttService mqttService, LoggingService loggingService, CancellationToken cancellationToken)
         {
-<<<<<<< HEAD
-            //Console.WriteLine("Tarefa UpdateAutonomyAsync iniciada.");
-=======
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
             while (!cancellationToken.IsCancellationRequested)
             {
                 if (_isMotorcycleOn)
@@ -1971,10 +1702,6 @@ namespace Simulador
                     break;
                 }
             }
-<<<<<<< HEAD
-            //Console.WriteLine("Tarefa UpdateAutonomyAsync encerrada.");
-=======
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
         }
 
         // Método para simular flutuações naturais na velocidade
@@ -1982,11 +1709,7 @@ namespace Simulador
         {
             // Instância compartilhada de Random para gerar variações
             Random rand = new Random();
-<<<<<<< HEAD
-            
-=======
 
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
             while (!cancellationToken.IsCancellationRequested)
             {
                 // Se a moto estiver ligada, não estiver carregando e tiver velocidade > 0:
@@ -2001,10 +1724,6 @@ namespace Simulador
                     DisplayDashboard();
                     // Publica a nova velocidade
                     await mqttService.PublishAsync("sim/speed", _speed.ToString());
-<<<<<<< HEAD
-                    //Console.WriteLine($"[FLUTUAÇÃO] Velocidade flutuada para {_speed} km/h");
-=======
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
                 }
                 // Aguarda 1 segundo antes de repetir
                 await Task.Delay(1000, cancellationToken);
@@ -2056,13 +1775,9 @@ namespace Simulador
                                 double slope = _currentRouteSegments[_segmentIndex].Slope;
                                 slopeFactor = 1.0 + slope;
                                 if (slopeFactor < 0.5)
-<<<<<<< HEAD
-                                    slopeFactor = 0.5;
-=======
                                 {
                                     slopeFactor = 0.5;
                                 }
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
                             }
                         }
                         consumptionThisMinute *= slopeFactor;
@@ -2117,9 +1832,4 @@ namespace Simulador
         }
         #endregion
     }
-<<<<<<< HEAD
-}  
-=======
 }
->>>>>>> e3b53f272a07881f510eabba11f3471774737f52
-
