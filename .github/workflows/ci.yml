@@ -47,7 +47,7 @@ jobs:
 
   notify_teams:
     needs: [code_quality, auto_merge_testes, notify_codacy_issues]
-    if: always()
+    if: success() || failure()
     runs-on: ubuntu-latest
     steps:
       - name: Definir Mensagem de Notificação
