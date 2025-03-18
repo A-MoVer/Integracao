@@ -1,4 +1,5 @@
-name: CI Pipelinee
+name: CI Pipeline
+
 on:
   pull_request:
     branches:
@@ -13,14 +14,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Executar Análise Codacy
-        run: |
-          export CODACY_PROJECT_TOKEN=${{ secrets.CODACY_PROJECT_TOKEN }}
+        run: echo "CODACY_PROJECT_TOKEN=${{ secrets.CODACY_PROJECT_TOKEN }}" >> $GITHUB_ENV
           bash <(curl -Ls https://coverage.codacy.com/get.sh) analyze --min-severity Medium || exit 1
 
 
   notify_codacy_issues:
     needs: code_quality
-    if: needs.code_quality.result == 'failure'
+    if: failure()
     runs-on: ubuntu-latest
 
     steps:
@@ -50,7 +50,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   notify_teams:
-    needs: [code_quality, auto_merge_testes, notify_codacy_issues]
+    needs: [code_quality, auto_merge_testes]
     if: always()
     runs-on: ubuntu-latest
 
