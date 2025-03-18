@@ -8,6 +8,10 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = MqttConsoleClient
+<<<<<<< HEAD
 build_property.ProjectDir = /home/amover1/Documents/Git-Pedro/Simulador/SimuladorConsola/MqttConsoleClient/
+=======
+build_property.ProjectDir = c:\Users\Pedro Guimarães\Desktop\UTAD\Bolsa\Integracao_Git\Integracao\Simulador\
+>>>>>>> e3b53f272a07881f510eabba11f3471774737f52
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
