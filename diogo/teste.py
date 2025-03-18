@@ -1,11 +1,8 @@
-import os
-
 def calcular_soma(a, b):
     resultado = a + b
     return resultado
 
 def funcao_com_erro():
-    x = 10  # Variável nunca usada
     y = "Erro"
 
     if y == "Erro":
@@ -16,9 +13,12 @@ def funcao_com_erro():
         
     return y
 
-# Uso incorreto de variáveis globais
+# Definir a variável global corretamente antes da função
+var_global = ""
+
 def altera_global():
-    global var_global  # Codacy pode detetar que isto não é uma boa prática
+    global var_global
     var_global = "Modificado"
+
 
 funcao_com_erro()
