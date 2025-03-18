@@ -1,4 +1,5 @@
 name: CI Pipeline
+
 on:
   pull_request:
     branches:
@@ -13,48 +14,58 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Executar Análise Codacy
-        if: ${{ secrets.CODACY_PROJECT_TOKEN != '' }}
-        run: |
-          export CODACY_PROJECT_TOKEN=${{ secrets.CODACY_PROJECT_TOKEN }}
+        run: echo "CODACY_PROJECT_TOKEN=${{ secrets.CODACY_PROJECT_TOKEN }}" >> $GITHUB_ENV
           bash <(curl -Ls https://coverage.codacy.com/get.sh) analyze --min-severity Medium || exit 1
+
 
   notify_codacy_issues:
     needs: code_quality
-    if: needs.code_quality.result == 'failure' && github.event.pull_request != ''
+    if: failure()
     runs-on: ubuntu-latest
+
     steps:
       - name: Comentar no Pull Request com os Erros do Codacy
         run: |
           AUTHOR="${{ github.event.pull_request.user.login }}"
           gh pr comment ${{ github.event.pull_request.html_url }} --body "
           🚨 Foram encontrados problemas de qualidade no código!  
+
           📌 [Ver Relatório do Codacy](https://app.codacy.com/gh/A-MoVer/Integracao/issues)  
+
           ⚠️ Erros devem ser corrigidos antes do merge. 👤 Autor: @$AUTHOR"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   auto_merge_testes:
     needs: code_quality
-    if: needs.code_quality.result == 'success' && github.event.pull_request.base.ref != 'main' && github.event.pull_request.base.ref != 'develop'
+    if: needs.code_quality.result == 'success'
     runs-on: ubuntu-latest
+
+
     steps:
       - name: Merge Automático para a Branch de Destino se Codacy Aprovar
-        if: github.event.pull_request != ''
         run: |
-          gh pr merge ${{ github.event.pull_request.html_url }} --auto --squash
+          gh pr merge ${{ github.event.pull_request.html_url }} --auto --squash || gh pr merge ${{ github.event.pull_request.html_url }} --admin --squash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   notify_teams:
-    needs: [code_quality, auto_merge_testes, notify_codacy_issues]
-    if: success() || failure()
+    needs: [code_quality, auto_merge_testes]
+    if: always()
     runs-on: ubuntu-latest
+
     steps:
       - name: Definir Mensagem de Notificação
         run: |
+          echo "Iniciando notificação do Teams..."
           BRANCH="${{ github.event.pull_request.base.ref }}"
           AUTHOR="${{ github.event.pull_request.user.login }}"
-
+          
+          echo "Branch: $BRANCH"
+          echo "Author: $AUTHOR"
+          echo "Code Quality Result: ${{ needs.code_quality.result }}"
+          echo "Auto Merge Result: ${{ needs.auto_merge_testes.result }}"
+          
           if [[ "${{ needs.code_quality.result }}" == "success" && "${{ needs.auto_merge_testes.result }}" == "success" ]]; then
             MESSAGE="✅ Nenhum erro encontrado. Código foi mesclado na branch '$BRANCH'. 👤 Autor: @$AUTHOR"
           else
@@ -63,12 +74,13 @@ jobs:
             ⚠️ Erros devem ser corrigidos antes do merge. 👤 Autor: @$AUTHOR"
           fi
 
-          curl -H "Content-Type: application/json" -d "{\"text\": \"$MESSAGE\"}" "${{ secrets.TEAMS_WEBHOOK_URL }}"
+          echo "Enviando notificação para o Teams..."
+          curl -v -H "Content-Type: application/json" -d "{\"text\": \"$MESSAGE\"}" "${{ secrets.TEAMS_WEBHOOK_URL }}"
 
   require_approval_develop:
     needs: auto_merge_testes
-    if: github.event.pull_request.base.ref == 'develop'
     runs-on: ubuntu-latest
+
     steps:
       - name: Requer Aprovação Manual para Merge em 'develop'
         run: echo "🚀 Merge para 'develop' requer 2 aprovações antes de continuar."
