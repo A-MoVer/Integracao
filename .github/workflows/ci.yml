@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Executar Análise Codacy
-        run: echo "CODACY_PROJECT_TOKEN=${{ secrets.CODACY_PROJECT_TOKEN }}" >> $GITHUB_ENV
+        run: echo "CODACY_PROJECT_TOKEN=\"${{ secrets.CODACY_PROJECT_TOKEN }}\"" >> $GITHUB_ENV
           bash <(curl -Ls https://coverage.codacy.com/get.sh) analyze --min-severity Medium || exit 1
 
 
@@ -51,32 +51,34 @@ jobs:
 
   notify_teams:
     needs: [code_quality, auto_merge_testes]
-    if: always()
+    if: always() && github.event.pull_request != ''
     runs-on: ubuntu-latest
 
     steps:
       - name: Definir Mensagem de Notificação
         run: |
-          echo "Iniciando notificação do Teams..."
+          set -x  # Debug para ver valores das variáveis
           BRANCH="${{ github.event.pull_request.base.ref }}"
           AUTHOR="${{ github.event.pull_request.user.login }}"
-          
+          CODE_QUALITY="${{ needs.code_quality.result }}"
+          AUTO_MERGE="${{ needs.auto_merge_testes.result }}"
+      
           echo "Branch: $BRANCH"
           echo "Author: $AUTHOR"
-          echo "Code Quality Result: ${{ needs.code_quality.result }}"
-          echo "Auto Merge Result: ${{ needs.auto_merge_testes.result }}"
-          
-          if [[ "${{ needs.code_quality.result }}" == "success" && "${{ needs.auto_merge_testes.result }}" == "success" ]]; then
+          echo "Code Quality Result: $CODE_QUALITY"
+          echo "Auto Merge Result: $AUTO_MERGE"
+      
+          if [[ "$CODE_QUALITY" == "success" && "$AUTO_MERGE" == "success" ]]; then
             MESSAGE="✅ Nenhum erro encontrado. Código foi mesclado na branch '$BRANCH'. 👤 Autor: @$AUTHOR"
           else
             MESSAGE="🚨 Problemas de qualidade no código na branch '$BRANCH'!  
             📌 [Ver Relatório do Codacy](https://app.codacy.com/gh/A-MoVer/Integracao/issues)  
             ⚠️ Erros devem ser corrigidos antes do merge. 👤 Autor: @$AUTHOR"
           fi
-
+      
           echo "Enviando notificação para o Teams..."
           curl -v -H "Content-Type: application/json" -d "{\"text\": \"$MESSAGE\"}" "${{ secrets.TEAMS_WEBHOOK_URL }}"
-
+ 
   require_approval_develop:
     needs: auto_merge_testes
     runs-on: ubuntu-latest
