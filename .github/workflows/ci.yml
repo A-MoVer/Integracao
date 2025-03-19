@@ -51,7 +51,7 @@ jobs:
 
   notify_teams:
     needs: [code_quality, auto_merge_testes]
-    if: always()
+    if: success() || failure()
     runs-on: ubuntu-latest
 
     steps:
