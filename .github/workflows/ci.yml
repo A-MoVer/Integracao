@@ -57,17 +57,18 @@ jobs:
     steps:
       - name: Definir Mensagem de Notificação
         run: |
-          set -x  # Modo debug para ver o que acontece
-          echo "Iniciando notificação do Teams..."
+          set -x  # Debug para ver valores das variáveis
           BRANCH="${{ github.event.pull_request.base.ref }}"
           AUTHOR="${{ github.event.pull_request.user.login }}"
-          
+          CODE_QUALITY="${{ needs.code_quality.result }}"
+          AUTO_MERGE="${{ needs.auto_merge_testes.result }}"
+      
           echo "Branch: $BRANCH"
           echo "Author: $AUTHOR"
-          echo "Code Quality Result: ${{ needs.code_quality.result }}"
-          echo "Auto Merge Result: ${{ needs.auto_merge_testes.result }}"
+          echo "Code Quality Result: $CODE_QUALITY"
+          echo "Auto Merge Result: $AUTO_MERGE"
       
-          if [[ "${{ needs.code_quality.result }}" == "success" && "${{ needs.auto_merge_testes.result }}" == "success" ]]; then
+          if [[ "$CODE_QUALITY" == "success" && "$AUTO_MERGE" == "success" ]]; then
             MESSAGE="✅ Nenhum erro encontrado. Código foi mesclado na branch '$BRANCH'. 👤 Autor: @$AUTHOR"
           else
             MESSAGE="🚨 Problemas de qualidade no código na branch '$BRANCH'!  
@@ -77,8 +78,7 @@ jobs:
       
           echo "Enviando notificação para o Teams..."
           curl -v -H "Content-Type: application/json" -d "{\"text\": \"$MESSAGE\"}" "${{ secrets.TEAMS_WEBHOOK_URL }}"
-
-
+ 
   require_approval_develop:
     needs: auto_merge_testes
     runs-on: ubuntu-latest

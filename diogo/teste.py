@@ -1,6 +1,6 @@
 def calcular_soma(a, b):
     resultado = a + b
-    return resultadooooo
+    return resultadooo
 #teste
 
 def funcao_com_erro():
