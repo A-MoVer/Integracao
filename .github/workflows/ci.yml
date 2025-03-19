@@ -78,9 +78,7 @@ jobs:
       
           echo "Enviando notificação para o Teams..."
           curl -v -H "Content-Type: application/json" -d "{\"text\": \"$MESSAGE\"}" "${{ secrets.TEAMS_WEBHOOK_URL }}"
-
-
-
+ 
   require_approval_develop:
     needs: auto_merge_testes
     runs-on: ubuntu-latest
