@@ -1,5 +1,5 @@
-name: CI Pipeline
 
+name: CI Pipeline
 on:
   pull_request:
     branches:
@@ -14,13 +14,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Executar Análise Codacy
+        if: ${{ secrets.CODACY_PROJECT_TOKEN != '' }}
         run: |
           export CODACY_PROJECT_TOKEN="${{ secrets.CODACY_PROJECT_TOKEN }}"
           bash <(curl -Ls https://coverage.codacy.com/get.sh) analyze --min-severity Medium || exit 1
 
   notify_codacy_issues:
     needs: code_quality
-    if: failure()
+    if: needs.code_quality.result == 'failure' && github.event.pull_request != ''
     runs-on: ubuntu-latest
     steps:
       - name: Comentar no Pull Request com os Erros do Codacy
@@ -35,17 +36,21 @@ jobs:
 
   auto_merge_testes:
     needs: code_quality
+
     if: needs.code_quality.result == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Merge Automático para a Branch de Destino se Codacy Aprovar
+        if: github.event.pull_request != ''
         run: |
-          gh pr merge ${{ github.event.pull_request.html_url }} --auto --squash || gh pr merge ${{ github.event.pull_request.html_url }} --admin --squash
+          gh pr merge ${{ github.event.pull_request.html_url }} --auto --squash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   notify_teams:
+
     needs: [code_quality, notify_codacy_issues, auto_merge_testes]
+    needs: [code_quality, auto_merge_testes, notify_codacy_issues]
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -78,6 +83,7 @@ jobs:
 
   require_approval_develop:
     needs: auto_merge_testes
+    if: github.event.pull_request.base.ref == 'develop'
     runs-on: ubuntu-latest
     steps:
       - name: Requer Aprovação Manual para Merge em 'develop'
