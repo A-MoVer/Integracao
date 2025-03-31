@@ -42,7 +42,7 @@ namespace Simulador.Services
 
             // Parâmetros dinâmicos:
             // Para simular o perigo ativo, definimos uma distância inicial aleatória entre 40 e 60m
-            int currentDistance = _rand.Next(40, 61);
+            int currentDistance = _rand.Next(85, 99);
             int messageCount = 0;
             double errorProbability = 0.3;   // 30% de chance de inverter o status (falso-positivo/negativo)
             double collisionProbability = 0.05; // 5% de chance de ocorrer colisão (distância = 0)
@@ -53,7 +53,7 @@ namespace Simulador.Services
                 messageCount++;
 
                 // Aplica um ruído (jitter) aleatório entre -3 e +3 metros à medição
-                int jitter = _rand.Next(-3, 4);
+                int jitter = _rand.Next(-5, 5);
                 int measuredDistance = Math.Max(currentDistance + jitter, 0);
 
                 // A partir da segunda mensagem, com 10% de chance ocorre colisão (distância = 0)
@@ -66,15 +66,16 @@ namespace Simulador.Services
                 if (measuredDistance == 0)
                 {
                     Console.WriteLine("Colisão detectada (distance = 0). Encerrando envio de mensagens.");
+                    await _mqttService.PublishAsync("sim/collision", "true");
                     break;
                 }
 
                 // Se a distância medida ultrapassar 100m, com 90% de chance o perigo termina
-                if (measuredDistance > 100)
+                if (measuredDistance > 150)
                 {
                     if (_rand.NextDouble() < 0.9)
                     {
-                        Console.WriteLine("Distância acima de 100m detectada. Perigo cessou.");
+                        Console.WriteLine("Distância acima de 150m detectada. Perigo cessou.");
                         break;
                     }
                     // Caso contrário, continua enviando mesmo que a distância esteja acima de 100m
@@ -140,8 +141,10 @@ namespace Simulador.Services
 
                 // Atualiza a distância para a próxima iteração:
                 // Simula o objeto se afastando lentamente: incremento aleatório entre 5 e 10 metros
-                int increment = _rand.Next(5, 11);
+                int increment = _rand.Next(-5, 11);
                 currentDistance += increment;
+
+
             }
 
             // Fora do loop: enviar mensagem final com status false (indicando que o perigo cessou)

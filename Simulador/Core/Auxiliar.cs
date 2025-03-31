@@ -192,6 +192,51 @@ namespace Simulador.Core
             loggingService.AddPerformanceLog(CreateLogEntry());
         }
 
+
+        public async Task ApplyBrakingAsync(int targetSpeed)
+        {
+            double brakingRate;
+            switch (SimulationState.DriveMode.ToLower())
+            {
+                case "eco": brakingRate = 5.0; break;
+                case "sport": brakingRate = 10.0; break;
+                default: brakingRate = 7.0; break;
+            }
+
+            int updateInterval = 200; // ms
+            double stepsPerSecond = 1000.0 / updateInterval;
+            double speedStep = brakingRate / stepsPerSecond;
+
+            await _mqttService.PublishAsync("sim/brake", "true");
+
+            while (SimulationState.Speed > targetSpeed)
+            {
+                double nextSpeedDouble = SimulationState.Speed - speedStep;
+                int nextSpeed = (int)Math.Round(nextSpeedDouble);
+                nextSpeed = Math.Clamp(nextSpeed, 0, 200);
+
+                SimulationState.Speed = nextSpeed;
+
+                if (SimulationState.Speed != _lastSpeedPublished)
+                {
+                    _lastSpeedPublished = SimulationState.Speed;
+                    _dashboard.DisplayDashboard();
+                    await _mqttService.PublishAsync("sim/speed", SimulationState.Speed.ToString());
+                    _loggingService.AddPerformanceLog(CreateLogEntry());
+                }
+
+                if (SimulationState.Speed <= targetSpeed)
+                {
+                    break;
+                }
+
+                await Task.Delay(updateInterval);
+            }
+
+            await _mqttService.PublishAsync("sim/brake", "false");
+        }
+
+
         private LogEntry CreateLogEntry()
         {
             return new LogEntry

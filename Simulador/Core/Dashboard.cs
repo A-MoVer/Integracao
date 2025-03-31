@@ -57,6 +57,7 @@ namespace Simulador.Core
             Console.WriteLine($"║ ABS: {FormatText(SimulationState.Abs ? "Ativo" : "Desativado", 10)}                                ║ ║   abs on / abs off                                  ║");
             Console.WriteLine($"║ Autonomia: {FormatDecimal(SimulationState.Autonomy, 5)} km                            ║ ╚═════════════════════════════════════════════════════╝");
             Console.WriteLine($"║ Total KM: {FormatDecimal(SimulationState.TotalKilometers, 5)} km                             ║");
+            Console.WriteLine($"║ GPS: Lat {SimulationState.Latitude:F6} / Lon {SimulationState.Longitude:F6}             ║");
             Console.WriteLine("╚════════════════════════════════════════════════╝");
             Console.WriteLine();
             Console.WriteLine("Restrições:");

@@ -37,9 +37,14 @@ namespace Simulador.Core
             Console.WriteLine("O motociclo foi ligado.");
 
             await _mqttService.PublishAsync("sim/motorcycle", "on");
+            await _mqttService.PublishAsync("sim/collision", "false");
             SimulationState.Lights = true;
             Console.WriteLine("As luzes foram ligadas automaticamente.");
             await _mqttService.PublishAsync("sim/lights", "true");
+            await _mqttService.PublishAsync("sim/battery", SimulationState.Battery.ToString());
+            await _mqttService.PublishAsync("sim/total_kilometers", SimulationState.TotalKilometers.ToString("F2"));
+            await _mqttService.PublishAsync("sim/gps/latitude", SimulationState.Latitude.ToString("F6"));
+            await _mqttService.PublishAsync("sim/gps/longitude", SimulationState.Longitude.ToString("F6"));
             _loggingService.AddPerformanceLog(CreateLogEntry());
 
             await _auxiliares.PublishAllStatesAsync();

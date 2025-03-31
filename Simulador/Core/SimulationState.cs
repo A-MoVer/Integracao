@@ -18,5 +18,8 @@ namespace Simulador.Core
         public static double Autonomy { get; set; } = 0.0;
         public static bool IsMotorcycleOn { get; set; } = false;
         public static bool IsCharging { get; set; } = false;
+        public static double Latitude { get; set; } = 41.287556;
+        public static double Longitude { get; set; } = -7.739556;
+
     }
 }

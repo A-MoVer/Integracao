@@ -148,7 +148,10 @@ namespace Simulador.Core
                 {
                     Console.WriteLine($"[LIMITE] Excedeu maxSpeed para {_routes._activeRouteName} (limite={routeMaxSpeed}). " +
                                     $"Forçando {SimulationState.Speed} => {routeMaxSpeed}");
-                    SimulationState.Speed = routeMaxSpeed;  // Reduz forçadamente
+                    Console.WriteLine($"[LIMITE] Excedeu o limite de {routeMaxSpeed} km/h na {_routes._activeRouteName}. Aplicando travagem automática...");
+                    await _auxiliares.ApplyBrakingAsync(routeMaxSpeed);
+                    Console.WriteLine($"[LIMITE] Velocidade corrigida para {SimulationState.Speed} km/h.");
+
                     await _mqttService.PublishAsync("sim/speed", SimulationState.Speed.ToString());
 
 
@@ -391,6 +394,21 @@ namespace Simulador.Core
             // Desliga o pisca
             await UpdateIndicatorAsync("none");
         }
+
+        public async Task ApplyBrakeCommandAsync(string command)
+        {
+            if (!int.TryParse(command, out int value) || value <= 0)
+            {
+                Console.WriteLine("Uso: brake <valor positivo> (ex: brake 20)");
+                return;
+            }
+
+            int targetSpeed = Math.Max(SimulationState.Speed - value, 0);
+            Console.WriteLine($"Travando de {SimulationState.Speed} km/h para {targetSpeed} km/h...");
+            await _auxiliares.ApplyBrakingAsync(targetSpeed);
+        }
+
+
 
 
     }

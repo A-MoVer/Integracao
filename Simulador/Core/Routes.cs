@@ -296,16 +296,25 @@ namespace Simulador.Core
                         // Se a distância percorrida ultrapassar a distância do segmento, passa para o próximo
                         if (_distanceInSegment >= segment.Distance)
                         {
-                            _distanceInSegment -= segment.Distance;
-                            _segmentIndex++;
-                            if (_segmentIndex >= _currentRouteSegments.Count && _isRouteActive)
+                            if (SimulationState.Speed > 0)
                             {
-                                Console.WriteLine("[DEBUG] _isRouteActive definido como false. Confirma se a rota terminou realmente.");
-                                _isRouteActive = false;
-                                Console.WriteLine("Rota concluída (chegaste ao último ponto).");
-                                await _mqttService.PublishAsync("sim/route/status", "completed");
+                                _distanceInSegment -= segment.Distance;
+                                _segmentIndex++;
+                                if (_segmentIndex >= _currentRouteSegments.Count && _isRouteActive)
+                                {
+                                    Console.WriteLine("[DEBUG] _isRouteActive definido como false. Confirma se a rota terminou realmente.");
+                                    _isRouteActive = false;
+                                    Console.WriteLine("Rota concluída (chegaste ao último ponto).");
+                                    await _mqttService.PublishAsync("sim/route/status", "completed");
+                                }
+                            }
+                            else
+                            {
+                                // Está parado (por ex. no semáforo), não avança na rota
+                                Console.WriteLine("[INFO] Moto parada. Segmento não avança até retomar movimento.");
                             }
                         }
+
 
                         if (_isRouteActive && _segmentIndex < _currentRouteSegments.Count)
                         {
@@ -337,7 +346,7 @@ namespace Simulador.Core
                                         Console.WriteLine("[DEBUG] Evento de semáforo vermelho na rota1.");
                                         Console.WriteLine("[URBANO] Semáforo vermelho detectado! Decelerando para parada...");
                                         // Desacelera suavemente até 0 km/h
-                                        await _auxiliares.ApplyAccelerationAsync(0);
+                                        await AdjustSpeedAsync(0);
 
                                         // Escolhe uma duração aleatória entre 3000 e 7000 ms para a parada
                                         int stopDuration = _rand.Next(3000, 7000);
@@ -385,6 +394,16 @@ namespace Simulador.Core
                                     int velocidadeOriginal = SimulationState.Speed;
                                     // Aumenta a velocidade temporariamente (por exemplo, +20 km/h, respeitando o limite máximo)
                                     int velocidadeUltra = Math.Min(SimulationState.Speed + 20, MAX_SPEED);
+
+                                    if (_routeConfigs.TryGetValue(_activeRouteName, out var config))
+                                    {
+                                        int maxPermitida = config.maxSpeed;
+                                        if (velocidadeUltra > maxPermitida)
+                                        {
+                                            Console.WriteLine($"[ULTRAPASSAGEM] Velocidade pretendida ({velocidadeUltra}) excede o limite da rota ({maxPermitida}). Corrigindo para {maxPermitida} km/h.");
+                                            velocidadeUltra = maxPermitida;
+                                        }
+                                    }
                                     await _auxiliares.ApplyAccelerationAsync(velocidadeUltra);
                                     // Mantém essa velocidade por um tempo (por exemplo, 3 segundos)
                                     await Task.Delay(3000);
@@ -431,7 +450,8 @@ namespace Simulador.Core
                                 if (segment.Slope > 0.08 && SimulationState.Speed > 30)
                                 {
                                     Console.WriteLine("[ROTA3] Subida íngreme detectada. Reduzindo velocidade para segurança.");
-                                    await _auxiliares.ApplyAccelerationAsync(SimulationState.Speed - 10);
+                                    await AdjustSpeedAsync(SimulationState.Speed - 10);
+
                                 }
                                 // Se estiver em descida e a velocidade estiver muito alta, limite a velocidade para 70 km/h
                                 else if (segment.Slope < -0.02 && SimulationState.Speed > 70)
@@ -443,7 +463,8 @@ namespace Simulador.Core
                                 if (_rand.NextDouble() < 0.1 && SimulationState.Speed > 20)
                                 {
                                     Console.WriteLine("[ROTA3] Trecho irregular ou estreito detectado. Reduzindo velocidade temporariamente.");
-                                    await _auxiliares.ApplyAccelerationAsync(SimulationState.Speed - 10);
+                                    await AdjustSpeedAsync(SimulationState.Speed - 10);
+
                                     // Mantém a velocidade reduzida por 2 segundos
                                     await Task.Delay(2000);
                                     Console.WriteLine("[ROTA3] Condições normais retomadas. Acelerando novamente.");
@@ -465,6 +486,30 @@ namespace Simulador.Core
                 }
             }
         }
+
+        private async Task AdjustSpeedAsync(int targetSpeed)
+        {
+            int currentSpeed = SimulationState.Speed;
+
+            if (targetSpeed < currentSpeed)
+            {
+                Console.WriteLine($"[TRAVAGEM] Reduzindo de {currentSpeed} km/h para {targetSpeed} km/h...");
+                await _auxiliares.ApplyBrakingAsync(targetSpeed);
+                Console.WriteLine($"[TRAVAGEM] Velocidade estabilizada em {SimulationState.Speed} km/h.");
+            }
+            else if (targetSpeed > currentSpeed)
+            {
+                Console.WriteLine($"[ACELERAÇÃO] Aumentando de {currentSpeed} km/h para {targetSpeed} km/h...");
+                await _auxiliares.ApplyAccelerationAsync(targetSpeed);
+                Console.WriteLine($"[ACELERAÇÃO] Velocidade estabilizada em {SimulationState.Speed} km/h.");
+            }
+            else
+            {
+                Console.WriteLine($"[VELOCIDADE] Já estás a {currentSpeed} km/h. Nenhuma alteração necessária.");
+            }
+        }
+
+
 
         private LogEntry CreateLogEntry()
         {

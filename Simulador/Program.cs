@@ -6,6 +6,7 @@ using Simulador.Models;
 using Simulador.Services;
 using Simulador.Helpers;
 using Simulador.Core;
+using CAN;
 
 namespace Simulador
 {
@@ -59,6 +60,7 @@ namespace Simulador
             var updateMethods = new UpdateMethods(mqttService, loggingService, dashboard, auxiliar, null);
             var routes = new Routes(mqttService, loggingService, sensorService, dashboard, null, null, auxiliar);
             var backgroundUpdated = new BackgroundUpdated(mqttService, loggingService, sensorService, _cancellationTokenSource, startAndUpdate, dashboard, updateMethods, routes);
+            var canService = new CAN.CanService(mqttService);
 
             startAndUpdate.SetAux(auxiliar);
             updateMethods.SetRoutes(routes);
@@ -98,6 +100,8 @@ namespace Simulador
 
             // Consumo de bateria enquanto se conduz
             _ = backgroundUpdated.UpdateBatteryConsumptionAsync(_cancellationTokenSource.Token);
+
+            _ = canService.StartAsync(_cancellationTokenSource.Token);
 
 
             // >>> Nova tarefa: SIMULA ROTA (lógica mais realista)
@@ -245,6 +249,7 @@ namespace Simulador
                     case "maxlights":
                     case "danger":
                     case "send":
+                    case "brake":
                         if (!SimulationState.IsMotorcycleOn)
                         {
                             Console.WriteLine("É necessário ligar a motocicleta antes de usar este comando. Use 'start' para ligar.");
@@ -298,6 +303,26 @@ namespace Simulador
                                     Console.WriteLine("Uso: speed +<valor> ou speed -<valor>");
                                 }
                                 break;
+
+                            case "brake":
+                                if (!SimulationState.IsMotorcycleOn)
+                                {
+                                    Console.WriteLine("É necessário ligar a motocicleta antes de usar este comando.");
+                                    break;
+                                }
+                                if (parts.Length == 2)
+                                {
+                                    await updateMethods.ApplyBrakeCommandAsync(parts[1]);
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Uso: brake <valor>");
+                                }
+                                break;
+                            case "gps":
+                                Console.WriteLine($"Localização atual: {SimulationState.Latitude:F6}, {SimulationState.Longitude:F6}");
+                                break;
+
 
                             case "temp":
                                 if (parts.Length == 2)
