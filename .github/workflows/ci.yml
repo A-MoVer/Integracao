@@ -13,10 +13,43 @@ jobs:
   code_quality:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - name: Executar Análise Codacy
         run: |
           export CODACY_PROJECT_TOKEN="${{ secrets.CODACY_PROJECT_TOKEN }}"
           bash <(curl -Ls https://coverage.codacy.com/get.sh) analyze --min-severity Medium || exit 1
+
+  test_node:
+    runs-on: ubuntu-latest
+    if: hashFiles('**/package.json') != ''
+    steps:
+      - uses: actions/checkout@v3
+      - name: Instalar dependências Node.js
+        run: npm install
+      - name: Executar testes Node.js
+        run: npm test
+
+  test_python:
+    runs-on: ubuntu-latest
+    if: hashFiles('**/requirements.txt') != ''
+    steps:
+      - uses: actions/checkout@v3
+      - name: Instalar dependências Python
+        run: pip install -r requirements.txt
+      - name: Executar testes Python
+        run: pytest
+
+  test_dotnet:
+    runs-on: ubuntu-latest
+    if: hashFiles('**/*.csproj') != ''
+    steps:
+      - uses: actions/checkout@v3
+      - name: Restaurar e testar projeto .NET
+        run: |
+          for proj in $(find . -name '*.csproj'); do
+            dotnet restore "$proj"
+            dotnet test "$proj"
+          done
 
   notify_codacy_issues:
     needs: code_quality
@@ -34,7 +67,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   auto_merge_testes:
-    needs: code_quality
+    needs: [code_quality, test_node, test_python, test_dotnet]
     if: needs.code_quality.result == 'success'
     runs-on: ubuntu-latest
     steps:
@@ -51,17 +84,11 @@ jobs:
     steps:
       - name: Definir Mensagem de Notificação
         run: |
-          set -x  # Debug para ver valores das variáveis
           BRANCH="${{ github.event.pull_request.base.ref }}"
           AUTHOR="${{ github.event.pull_request.user.login }}"
           CODE_QUALITY="${{ needs.code_quality.result }}"
           AUTO_MERGE="${{ needs.auto_merge_testes.result }}"
-      
-          echo "Branch: $BRANCH"
-          echo "Author: $AUTHOR"
-          echo "Code Quality Result: $CODE_QUALITY"
-          echo "Auto Merge Result: $AUTO_MERGE"
-      
+
           if [[ "$CODE_QUALITY" == "success" && "$AUTO_MERGE" == "success" ]]; then
             MESSAGE="✅ Nenhum erro encontrado. Código foi mesclado na branch '$BRANCH'. 👤 Autor: @$AUTHOR"
           else
@@ -69,8 +96,7 @@ jobs:
             📌 [Ver Relatório do Codacy](https://app.codacy.com/gh/A-MoVer/Integracao/issues)  
             ⚠️ Erros devem ser corrigidos antes do merge. 👤 Autor: @$AUTHOR"
           fi
-      
-          echo "Enviando notificação para o Teams..."
+
           curl -v -H "Content-Type: application/json" -d "{\"text\": \"$MESSAGE\"}" "${{ secrets.TEAMS_WEBHOOK_URL }}"
 
   require_approval_develop:
