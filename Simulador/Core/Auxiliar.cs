@@ -44,6 +44,7 @@ namespace Simulador.Core
             await _mqttService.PublishAsync("sim/danger-lights", SimulationState.DangerLights.ToString());
             await _mqttService.PublishAsync("sim/total_kilometers", SimulationState.TotalKilometers.ToString("F2"));
             await _mqttService.PublishAsync("sim/autonomy", SimulationState.Autonomy.ToString("F2"));
+            await _mqttService.PublishAsync("sim/brake", SimulationState.Brake.ToString());
         }
 
         private static Random _rand = new Random();
@@ -206,8 +207,8 @@ namespace Simulador.Core
             int updateInterval = 200; // ms
             double stepsPerSecond = 1000.0 / updateInterval;
             double speedStep = brakingRate / stepsPerSecond;
-
-            await _mqttService.PublishAsync("sim/brake", "true");
+            SimulationState.Brake = true;
+            await _mqttService.PublishAsync("sim/brake", SimulationState.Brake.ToString());
 
             while (SimulationState.Speed > targetSpeed)
             {
@@ -232,8 +233,8 @@ namespace Simulador.Core
 
                 await Task.Delay(updateInterval);
             }
-
-            await _mqttService.PublishAsync("sim/brake", "false");
+            SimulationState.Brake = false;
+            await _mqttService.PublishAsync("sim/brake", SimulationState.Brake.ToString());
         }
 
 

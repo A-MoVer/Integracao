@@ -11,7 +11,7 @@ namespace CAN
     public class CanService
     {
         private static char[] mserial_port = "COM5\0".ToCharArray();
-        private static ushort mbitrate = 500;
+        private static ushort mbitrate = 1000;
         private readonly MqttService _mqttService;
 
         public CanService(MqttService mqttService)
@@ -33,24 +33,27 @@ namespace CAN
             int distancia = msg.payload[1] + (msg.payload[2] << 8);
             string lado = msg.payload[3] == 1 ? "Direita" : "Esquerda";
 
-            string algoritmo = msg.ident switch
+            uint tipoSensor = msg.ident & 0xFF;  // Máscara para obter apenas o tipo
+            int prioridade = (int)((msg.ident & 0xF00) >> 8);
+            string algoritmo = tipoSensor switch
             {
-                0x100 => "FrontalCollision",
-                0x110 => "RearCollision",
-                0x120 => "BlindSpotDetection",
-                0x105 => "PedestrianDetection",
+                0x00 => "FrontalCollision",
+                0x10 => "RearCollision",
+                0x20 => "BlindSpotDetection",
+                0x05 => "PedestrianDetection",
                 _ => $"Desconhecido_{msg.ident:X}"
             };
 
             string perigo = status == 1 ? "PERIGO" : "Seguro";
 
-            Console.WriteLine($"[CAN] {algoritmo} | Status: {perigo} | Distância: {distancia} cm | Lado: {lado}");
+            Console.WriteLine($"[CAN] {algoritmo} | Prio: {prioridade} | Status: {perigo} | Distância: {distancia} cm | Lado: {lado}");
 
             var payload = new
             {
                 status = perigo,
                 distancia,
-                lado
+                lado,
+                prioridade
             };
 
             string topic = $"sim/can/{algoritmo}";

@@ -20,6 +20,7 @@ namespace Simulador.Core
         public static bool IsCharging { get; set; } = false;
         public static double Latitude { get; set; } = 41.287556;
         public static double Longitude { get; set; } = -7.739556;
+        public static bool Brake { get; set; } = false;
 
     }
 }
