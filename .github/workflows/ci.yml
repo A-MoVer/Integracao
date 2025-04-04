@@ -105,3 +105,15 @@ jobs:
     steps:
       - name: Requer Aprovação Manual para Merge em 'develop'
         run: echo "🚀 Merge para 'develop' requer 2 aprovações antes de continuar."
+
+  create_release:
+    needs: auto_merge_testes
+    if: github.base_ref == 'main' && needs.auto_merge_testes.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Criar Tag e Release Automática
+        run: |
+          VERSION="v$(date +'%Y.%m.%d-%H%M')"
+          gh release create "$VERSION" --generate-notes --target main
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
