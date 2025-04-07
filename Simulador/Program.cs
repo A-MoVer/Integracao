@@ -249,6 +249,7 @@ namespace Simulador
                     case "maxlights":
                     case "danger":
                     case "send":
+                    case "sensors":
                     case "brake":
                         if (!SimulationState.IsMotorcycleOn)
                         {
@@ -421,6 +422,10 @@ namespace Simulador
                                 {
                                     Console.WriteLine("Uso: send <sensor>");
                                 }
+                                break;
+
+                            case "sensors":
+                                await sensorService.StartManualInputAsync();
                                 break;
 
                             default:

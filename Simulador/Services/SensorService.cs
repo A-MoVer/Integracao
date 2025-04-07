@@ -169,5 +169,142 @@ namespace Simulador.Services
             Console.WriteLine("Enviado mensagem final com status: false");
             Console.WriteLine($"Finalizado o envio de mensagens para o sensor '{sensorName}'.");
         }
+
+        public async Task StartManualInputAsync()
+        {
+            Console.WriteLine("== MODO MANUAL DE INSERÇÃO DE DADOS DE SENSORES ==\n");
+
+            while (true)
+            {
+                Console.Write("Escreva o número do sensor (1 - FrontalCollision, 2 - RearCollision, 3 - BlindSpotDetection, 4 - PedestrianDetection): ");
+                string inputSensorName = Console.ReadLine();
+                string sensorName = "";
+
+                switch (inputSensorName)
+                {
+                    case "1":
+                        sensorName = "frontalcollision";
+                        break;
+                    case "2":
+                        sensorName = "rearcollision";
+                        break;
+                    case "3":
+                        sensorName = "blindspot";
+                        break;
+                    case "4":
+                        sensorName = "pedestrian";
+                        break;
+                }
+
+                if (string.IsNullOrEmpty(sensorName))
+                {
+                    Console.WriteLine("Saindo do modo manual.");
+                    break;
+                }
+
+                if (!_sensorMappings.ContainsKey(sensorName))
+                {
+                    Console.WriteLine("Sensor inválido. Tenta novamente.\n");
+                    continue;
+                }
+
+                var (arbitrationId, algorithmID) = _sensorMappings[sensorName];
+
+                Console.Write("Distância (em cm): ");
+                if (!int.TryParse(Console.ReadLine(), out int distancia))
+                {
+                    Console.WriteLine("Distância inválida.\n");
+                    continue;
+                }
+
+                Console.Write("Status (1 - Seguro, 2 - PERIGO): ");
+                string inputStatus = Console.ReadLine();
+                string statusStr = "";
+
+                switch (inputStatus)
+                {
+                    case "1":
+                        statusStr = "Seguro";
+                        break;
+                    case "2":
+                        statusStr = "PERIGO";
+                        break;
+                }
+
+                bool status = statusStr?.ToUpper() == "PERIGO";
+
+                Console.Write("Prioridade (1 = Alta, 2 = Média, 3 = Baixa): ");
+                if (!int.TryParse(Console.ReadLine(), out int prioridade))
+                {
+                    Console.WriteLine("Prioridade inválida.\n");
+                    continue;
+                }
+
+                string lado = null;
+                int ladoBit = 0;
+
+
+                Console.Write("Lado (Direita ou Esquerda): ");
+                lado = Console.ReadLine();
+                ladoBit = lado?.ToLower() == "direita" ? 1 : 0;
+
+
+                // ⚙️ Construir ArbitrationId com prioridade
+                int prioridadeOffset = prioridade switch
+                {
+                    1 => 0x100,
+                    2 => 0x200,
+                    3 => 0x300,
+                    _ => 0x200
+                };
+
+                int arbitrationIdComPrioridade = arbitrationId;
+
+
+                // 🧱 Construir estrutura CAN
+                var canMessage = new CanMessage
+                {
+                    AlgorithmID = algorithmID,
+                    CAN_Message = new CanData
+                    {
+                        ArbitrationId = arbitrationIdComPrioridade,
+                        Data = new int[8]
+                    }
+                };
+
+                switch (algorithmID)
+                {
+                    case "FrontalCollisionDetection":
+                        canMessage.CAN_Message.Data[0] = status ? 1 : 0;
+                        canMessage.CAN_Message.Data[1] = distancia;
+                        canMessage.CAN_Message.Data[2] = ladoBit;
+                        canMessage.CAN_Message.Data[7] = prioridade;
+                        break;
+                    case "RearCollisionDetection":
+                        canMessage.CAN_Message.Data[0] = status ? 1 : 0;
+                        canMessage.CAN_Message.Data[1] = distancia;
+                        canMessage.CAN_Message.Data[2] = ladoBit;
+                        canMessage.CAN_Message.Data[7] = prioridade;
+                        break;
+                    case "BlindSpotDetection":
+                        canMessage.CAN_Message.Data[0] = status ? 1 : 0;
+                        canMessage.CAN_Message.Data[1] = distancia;
+                        canMessage.CAN_Message.Data[3] = ladoBit;
+                        canMessage.CAN_Message.Data[7] = prioridade;
+                        break;
+                    case "PedestrianDetection":
+                        canMessage.CAN_Message.Data[0] = status ? 1 : 0;
+                        canMessage.CAN_Message.Data[1] = distancia;
+                        canMessage.CAN_Message.Data[2] = ladoBit;
+                        canMessage.CAN_Message.Data[7] = prioridade;
+                        break;
+                }
+
+                // 📤 Publicar JSON bruto no tópico de simulação CAN
+                string rawJson = System.Text.Json.JsonSerializer.Serialize(canMessage);
+                await _mqttService.PublishAsync("sim/canmessages", rawJson);
+                Console.WriteLine($"\n✅ Publicado em sim/canmessages: {rawJson}");
+            }
+        }
     }
 }
