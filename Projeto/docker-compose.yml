@@ -4,7 +4,7 @@ services:
     ports:
       - "8055:8055"
     volumes:
-      - directus_db:/directus/database 
+      - directus_db:/directus/database
       - ./uploads:/directus/uploads
       - ./extensions:/directus/extensions
     environment:
@@ -28,6 +28,6 @@ services:
     volumes:
       - ./certs/self.crt:/etc/ssl/certs/self.crt:ro
       - ./certs/self.key:/etc/ssl/private/self.key:ro
-  
-  volumes:                # ← mesmo nível de “services”
-    directus_db:   
+
+  volumes:          # ← fora de “services”
+    directus_db:    # declaração vazia chega
