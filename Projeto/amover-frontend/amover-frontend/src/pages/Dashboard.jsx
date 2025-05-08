@@ -1,0 +1,103 @@
+// src/pages/Dashboard.jsx
+import { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { usePublications } from '../context/PublicationsContext';
+import PublicationsFeed from '../components/PublicationsFeed';
+import DraftsFeed       from '../components/DraftsFeed';
+import CreatePublication from '../components/CreatePublication';
+import { Box, Typography, Tabs, Tab, Button } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+
+export default function Dashboard() {
+  const { user } = useAuth();
+  const { publications, setPublications } = usePublications();
+
+  const [tab, setTab]           = useState(0);
+  const [modalPub, setModalPub] = useState(null); // null=fechado, {}=novo, {...}=edição
+
+  const handleTab  = (_, v) => setTab(v);
+
+  // Só publicadas (status="publicar")
+  const published = publications.filter(p => p.status === 'publicar');
+  // Só rascunhos (status="rascunho")
+  const drafts    = publications.filter(p => p.status === 'rascunho');
+  // Só escondidas do próprio autor
+  const hidden    = publications.filter(p => p.status === 'esconder' && p.author === user.email);
+
+  const openNew    = () => setModalPub({});      // criar novo
+  const openEdit   = pub => setModalPub(pub);    // editar existente
+  const closeModal = () => setModalPub(null);
+
+  const handleSave = (saved) => {
+    if (publications.some(p => p.id === saved.id)) {
+      // editar
+      setPublications(publications.map(p => p.id === saved.id ? saved : p));
+    } else {
+      // criar
+      setPublications([...publications, saved]);
+    }
+    closeModal();
+  };
+
+  return (
+    <Box sx={{ pt: 12, px: 2 }}>
+      <Typography variant="h4" align="center" gutterBottom>
+        Bem-vindo, {user.email} ({user.role})
+      </Typography>
+
+      {['bolseiro','tecnico','orientador'].includes(user.role) && (
+        <Box textAlign="center" sx={{ mb: 3 }}>
+          <Button
+            variant="contained"
+            color="success"
+            startIcon={<AddIcon />}
+            onClick={openNew}
+          >
+            Nova Publicação / Rascunho
+          </Button>
+        </Box>
+      )}
+
+      <Tabs
+        value={tab}
+        onChange={handleTab}
+        centered
+        textColor="success"
+        indicatorColor="success"
+        sx={{ mb: 4 }}
+      >
+        <Tab label={`Feed (${published.length})`} />
+        <Tab label={`Rascunhos (${drafts.length})`} />
+        {hidden.length > 0 && (
+          <Tab label={`Ocultas (${hidden.length})`} />
+        )}
+      </Tabs>
+
+      {tab === 0 && (
+        <PublicationsFeed
+          data={published}
+          onEdit={openEdit}
+        />
+      )}
+      {tab === 1 && (
+        <DraftsFeed
+          data={drafts}
+          onEdit={openEdit}
+        />
+      )}
+      {tab === 2 && hidden.length > 0 && (
+        <PublicationsFeed
+          data={hidden}
+          onEdit={openEdit}
+        />
+      )}
+
+      <CreatePublication
+        open={!!modalPub}
+        publication={modalPub}
+        onSave={handleSave}
+        onClose={closeModal}
+      />
+    </Box>
+  );
+}

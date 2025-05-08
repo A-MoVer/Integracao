@@ -1,0 +1,61 @@
+.equipas-container {
+    background-color: #f1f8f2; /* Fundo bem claro com toque verde */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.equipas-content {
+    flex: 1;
+    width: 80%;
+    max-width: 1000px;
+    margin: auto;
+    padding: 20px;
+    text-align: center;
+}
+
+.equipas-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+.equipa-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
+    text-align: center;
+    width: 220px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer; /* Indica que é clicável */
+}
+
+.equipa-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.equipa-logo {
+    width: 90px;
+    height: 90px;
+    object-fit: contain;
+    margin-bottom: 12px;
+    border-radius: 8px;
+}
+
+.equipa-card h3 {
+    color: #2e7d32;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 10px 0 5px 0;
+}
+
+.equipa-card p {
+    font-size: 0.9rem;
+    color: #666;
+}

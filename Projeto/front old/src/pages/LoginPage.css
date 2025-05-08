@@ -1,0 +1,105 @@
+/* Reset e estilos gerais */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  html, body {
+    height: 100%;
+    font-family: 'Poppins', sans-serif;
+    overflow-x: hidden;
+  }
+  
+  /* Variáveis de cores */
+  :root {
+    --primary-color: #4CAF50;
+    --light-green: #AED581;
+    --white-translucent: rgba(255, 255, 255, 0.9);
+  }
+  
+  /* Container principal com background simples (gradiente) */
+  .login-container {
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden;
+    color: #fff;
+    background: linear-gradient(135deg, #4CAF50, #AED581);
+  }
+  
+
+  /* Container do Formulário de Login */
+  .login-form-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding-top: 80px; /* Espaço para o header fixo */
+  }
+  
+  /* Formulário de Login com efeito Glassmorphism */
+  .login-form {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    border-radius: 15px;
+    padding: 2rem;
+    max-width: 400px;
+    width: 100%;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+  }
+  
+  .login-form h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: var(--primary-color);
+  }
+  
+  .login-form input {
+    width: 100%;
+    padding: 0.8rem;
+    margin-bottom: 1rem;
+    border: none;
+    border-radius: 5px;
+  }
+  
+  .login-form button.btn {
+    width: 100%;
+    padding: 0.8rem;
+    border: none;
+    border-radius: 30px;
+    background-color: var(--white-translucent);
+    color: #333;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  }
+  
+  .login-form button.btn:hover {
+    background-color: #fff;
+    transform: translateY(-3px);
+  }
+  
+  .error-container {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+    padding: 10px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    font-size: 0.9em;
+  }
+  
+  .error-icon {
+    margin-right: 8px;
+    font-weight: bold;
+    font-size: 1.2em;
+  }
+  .error-text a {
+    color: #721c24;
+    text-decoration: underline;
+    font-weight: bold;
+  }
+  
