@@ -28,3 +28,6 @@ services:
     volumes:
       - ./certs/self.crt:/etc/ssl/certs/self.crt:ro
       - ./certs/self.key:/etc/ssl/private/self.key:ro
+  
+  volumes:                # ← mesmo nível de “services”
+    directus_db:   
