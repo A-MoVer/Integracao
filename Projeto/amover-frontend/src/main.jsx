@@ -1,21 +1,27 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App.jsx'
-import './index.css'
-import { AuthProvider } from './context/AuthContext'
-import { TeamsProvider } from './context/TeamsContext'
-import { PublicationsProvider } from './context/PublicationsContext'  // ← importa o teu PublicationsProvider
+// src/main.jsx
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
 
-import 'bootstrap/dist/css/bootstrap.min.css'
+import App from './App.jsx';
+import './index.css';
+
+import { AuthProvider } from './context/AuthContext';          // confirma o caminho
+import { TeamsProvider } from './context/TeamsContext';
+import { PublicationsProvider } from './context/PublicationsContext';
+
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <AuthProvider>
-      <TeamsProvider>         
-        <PublicationsProvider>
-          <App />
-        </PublicationsProvider>
-      </TeamsProvider>
-    </AuthProvider>
+    <BrowserRouter>            {/* ← aqui */}
+      <AuthProvider>
+        <TeamsProvider>
+          <PublicationsProvider>
+            <App />
+          </PublicationsProvider>
+        </TeamsProvider>
+      </AuthProvider>
+    </BrowserRouter>
   </React.StrictMode>
-)
+);
