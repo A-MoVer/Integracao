@@ -1,15 +1,16 @@
-// vite.config.js
+// amover-frontend/vite.config.js
 import { defineConfig } from 'vite';
 import react          from '@vitejs/plugin-react';
 import fs             from 'node:fs';
 
 export default defineConfig(({ command }) => {
-  const base = {
+  const cfg = {
     plugins: [react()],
   };
 
+  // só carrega HTTPS e proxy quando rodamos `vite serve`
   if (command === 'serve') {
-    base.server = {
+    cfg.server = {
       https: {
         key:  fs.readFileSync('./localhost-key.pem'),
         cert: fs.readFileSync('./localhost.pem'),
@@ -17,7 +18,7 @@ export default defineConfig(({ command }) => {
       port: 5173,
       proxy: {
         '/api': {
-          target: 'http://localhost:8055',
+          target: 'http://directus:8055',
           changeOrigin: true,
           secure: false,
           rewrite: path => path.replace(/^\/api/, ''),
@@ -26,5 +27,5 @@ export default defineConfig(({ command }) => {
     };
   }
 
-  return base;
+  return cfg;
 });
