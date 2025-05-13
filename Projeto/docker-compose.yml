@@ -19,8 +19,8 @@ services:
 
   frontend:
     build:
-      context: ./amover-frontend
-      dockerfile: Dockerfile
+    context: .                    # ← root of the repo
+    dockerfile: amover-frontend/Dockerfile
     ports:
       - "443:443"
     depends_on:
