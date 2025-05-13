@@ -9,8 +9,6 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 COPY . .
-COPY ../certs ./certs
-
 RUN npm run build        # produz /app/dist
 
 # ─── estágio de produção ─────────────────────────────────────────────────────
