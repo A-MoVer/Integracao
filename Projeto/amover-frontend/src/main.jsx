@@ -6,7 +6,7 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App.jsx';
 import './index.css';
 
-import { AuthProvider } from './context/AuthContext';          // confirma o caminho
+import { AuthProvider } from './services/Auth.jsx';          // confirma o caminho
 import { TeamsProvider } from './context/TeamsContext';
 import { PublicationsProvider } from './context/PublicationsContext';
 

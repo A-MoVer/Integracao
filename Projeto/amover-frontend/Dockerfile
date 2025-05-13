@@ -1,5 +1,5 @@
 # ─── estágio de build ────────────────────────────────────────────────────────
-FROM node:20-alpine AS builder
+FROM node:24-alpine AS builder
 
 
 ARG VITE_API_URL=https://localhost:8055   

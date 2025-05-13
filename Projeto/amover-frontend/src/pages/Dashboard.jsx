@@ -1,51 +1,53 @@
 // src/pages/Dashboard.jsx
 import { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../services/Auth';
 import { usePublications } from '../context/PublicationsContext';
-import PublicationsFeed from '../components/PublicationsFeed';
-import DraftsFeed       from '../components/DraftsFeed';
+import PublicationsFeed  from '../components/PublicationsFeed';
+import DraftsFeed        from '../components/DraftsFeed';
 import CreatePublication from '../components/CreatePublication';
 import { Box, Typography, Tabs, Tab, Button } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 
 export default function Dashboard() {
+  /* 1️⃣  TODOS os hooks em topo de função, sem condições */
   const { user } = useAuth();
   const { publications, setPublications } = usePublications();
 
+
   const [tab, setTab]           = useState(0);
-  const [modalPub, setModalPub] = useState(null); // null=fechado, {}=novo, {...}=edição
+  const [modalPub, setModalPub] = useState(null);
+
+  if (!user) return null;
+
 
   const handleTab  = (_, v) => setTab(v);
 
-  // Só publicadas (status="publicar")
+  /* 3️⃣  Processamento de dados */
   const published = publications.filter(p => p.status === 'publicar');
-  // Só rascunhos (status="rascunho")
   const drafts    = publications.filter(p => p.status === 'rascunho');
-  // Só escondidas do próprio autor
-  const hidden    = publications.filter(p => p.status === 'esconder' && p.author === user.email);
+  const hidden    = publications.filter(
+                      p => p.status === 'esconder' && p.author === user.email);
 
-  const openNew    = () => setModalPub({});      // criar novo
-  const openEdit   = pub => setModalPub(pub);    // editar existente
-  const closeModal = () => setModalPub(null);
-
+  const openNew    = ()          => setModalPub({});
+  const openEdit   = (pub)       => setModalPub(pub);
+  const closeModal = ()          => setModalPub(null);
   const handleSave = (saved) => {
-    if (publications.some(p => p.id === saved.id)) {
-      // editar
-      setPublications(publications.map(p => p.id === saved.id ? saved : p));
-    } else {
-      // criar
-      setPublications([...publications, saved]);
-    }
+    setPublications(prev =>
+      prev.some(p => p.id === saved.id)
+        ? prev.map(p => p.id === saved.id ? saved : p)   // editar
+        : [...prev, saved]                               // criar
+    );
     closeModal();
   };
 
   return (
     <Box sx={{ pt: 12, px: 2 }}>
       <Typography variant="h4" align="center" gutterBottom>
-        Bem-vindo, {user.email} ({user.role})
+        {/* 4️⃣  Usa role.name ou outro campo string */}
+        Bem‑vindo, {user.email} ({user.role?.name || user.role})
       </Typography>
 
-      {['bolseiro','tecnico','orientador'].includes(user.role) && (
+      {['bolseiro','tecnico','orientador'].includes(user.role?.name) && (
         <Box textAlign="center" sx={{ mb: 3 }}>
           <Button
             variant="contained"
@@ -58,39 +60,17 @@ export default function Dashboard() {
         </Box>
       )}
 
-      <Tabs
-        value={tab}
-        onChange={handleTab}
-        centered
-        textColor="success"
-        indicatorColor="success"
-        sx={{ mb: 4 }}
-      >
+      <Tabs value={tab} onChange={handleTab} centered textColor="success"
+            indicatorColor="success" sx={{ mb: 4 }}>
         <Tab label={`Feed (${published.length})`} />
         <Tab label={`Rascunhos (${drafts.length})`} />
-        {hidden.length > 0 && (
-          <Tab label={`Ocultas (${hidden.length})`} />
-        )}
+        {hidden.length > 0 && <Tab label={`Ocultas (${hidden.length})`} />}
       </Tabs>
 
-      {tab === 0 && (
-        <PublicationsFeed
-          data={published}
-          onEdit={openEdit}
-        />
-      )}
-      {tab === 1 && (
-        <DraftsFeed
-          data={drafts}
-          onEdit={openEdit}
-        />
-      )}
-      {tab === 2 && hidden.length > 0 && (
-        <PublicationsFeed
-          data={hidden}
-          onEdit={openEdit}
-        />
-      )}
+      {tab === 0 && <PublicationsFeed data={published} onEdit={openEdit} />}
+      {tab === 1 && <DraftsFeed       data={drafts}    onEdit={openEdit} />}
+      {tab === 2 && hidden.length > 0 &&
+        <PublicationsFeed data={hidden} onEdit={openEdit} />}
 
       <CreatePublication
         open={!!modalPub}

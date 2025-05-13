@@ -1,6 +1,6 @@
 // src/components/CreatePublication.jsx
 import { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../services/Auth';
 import { useTeams } from '../context/TeamsContext';
 import { TAGS } from '../constants/tags';
 import {

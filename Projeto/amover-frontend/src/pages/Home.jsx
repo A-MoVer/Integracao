@@ -1,7 +1,18 @@
 import { Link } from 'react-router-dom';
 import Button from '@mui/material/Button';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../services/Auth';
 
 function Home() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) navigate('/dashboard', { replace: true });
+  }, [user, navigate]);
+
+  if (user) return null;
   return (
     <div
       style={{

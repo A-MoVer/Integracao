@@ -1,5 +1,5 @@
 //directus.js
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8055';
+const API_URL = '/api';  
 
 export async function loginDirectus(email, password) {
   const response = await fetch(`${API_URL}/auth/login`, {
@@ -8,7 +8,7 @@ export async function loginDirectus(email, password) {
     body: JSON.stringify({ email, password })
   });
   const data = await response.json();
-
+  console.log('Resposta do Directus:', data);  // ajuda brutal
   if (!response.ok) {
     throw new Error(data?.errors?.[0]?.message || 'Erro no login');
   }
@@ -29,6 +29,16 @@ export async function getPublicacoes(token) {
   }
 
   return data.data;
+}
+
+export async function logoutDirectus(token) {
+  // mesmo que falhe (ex.: token expirado) não queremos bloquear o UI
+  try {
+    await fetch(`${API_URL}/auth/logout`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  } catch (_) {}
 }
 export async function getUserInfo(token) {
   const response = await fetch(`${API_URL}/users/me?fields=*,role.*`, {

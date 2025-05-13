@@ -1,6 +1,6 @@
 // src/components/Navbar.jsx
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../services/Auth';
 import Button from '@mui/material/Button';
 
 export default function Navbar() {
@@ -28,13 +28,15 @@ export default function Navbar() {
         <div className="ms-auto d-flex align-items-center">
           {user ? (
             <>
-              <span className="me-3">Bem-vinda, {user.email}</span>
+              <span className="me-3">
+                Bem‑vindo/a, {user.email} ({user.role?.name})
+              </span>
               <Button variant="outlined" color="success" onClick={handleLogout}>
                 Logout
               </Button>
 
               {/* Botão Administração aparece apenas se for presidente */}
-              {user.role === 'presidente' && (
+              {user.role?.name === 'presidente' && (
                 <Link to="/admin" className="ms-3 text-decoration-none">
                   <Button variant="outlined" color="success">
                     Administração

@@ -11,6 +11,7 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
   const [user, setUser]   = useState(null);
   const [token, setToken] = useState(Cookies.get('token') || '');
+  // ➊ nova função de login
   const login = async (email, password) => {
     try {
       const newToken = await loginDirectus(email, password);
@@ -19,7 +20,7 @@ export const AuthProvider = ({ children }) => {
         secure: true,  
         sameSite: 'Strict',
       });
-      setToken(newToken);          
+      setToken(newToken);          // dispara o useEffect que obtém o utilizador
       return true;
     } catch (err) {
       console.error('Falha no login:', err);
@@ -27,6 +28,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // ➋ logout simples (opcional mas útil)
   const logout = () => {
     logoutDirectus(token);
     Cookies.remove('token');
@@ -35,6 +37,7 @@ export const AuthProvider = ({ children }) => {
     navigate('/', { replace: true });
   };
 
+  // Já existente – obtém info do utilizador sempre que o token muda
   useEffect(() => {
     async function fetchUser() {
       if (!token) return;

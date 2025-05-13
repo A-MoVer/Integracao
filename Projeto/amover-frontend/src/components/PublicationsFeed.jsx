@@ -1,5 +1,5 @@
 // src/components/PublicationsFeed.jsx
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../services/Auth';
 import { usePublications } from '../context/PublicationsContext';
 import { Link } from 'react-router-dom';
 import {
@@ -17,7 +17,7 @@ export default function PublicationsFeed({ data, onEdit }) {
 
   // Só permite ação ao autor ou orientador
   const canManage = (pub) =>
-    pub.author === user.email || user.role === 'orientador';
+    pub.author === user.email || user.role?.name === 'orientador';
 
   const toggleHide = (id) => {
     setPublications(

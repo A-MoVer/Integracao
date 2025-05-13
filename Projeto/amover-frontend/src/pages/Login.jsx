@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../services/Auth';
 import { useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -7,22 +7,20 @@ import TextField from '@mui/material/TextField';
 function Login() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+  const [erro, setErro]  = useState('');
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-  
-    if (email === 'admin@amover.pt') {
-      login(email, 'presidente');
-    } else {
-      login(email, 'bolseiro'); // ou 'orientador', 'tecnico', etc.
-    }
-  
-    navigate('/dashboard');
-  };
-  
-  
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  console.log('[Login] Submitting →', { email, senha });      // ① dispara?
+
+  const ok = await login(email, senha);
+  console.log('[Login] Resultado de login →', ok);            // ② chega cá?
+
+  if (ok) navigate('/dashboard');
+  else     setErro('Credenciais inválidas');
+};
 
   return (
     <div
@@ -71,6 +69,10 @@ function Login() {
           value={senha}
           onChange={(e) => setSenha(e.target.value)}
         />
+
+        {erro && (
+          <p style={{ color: 'red', marginTop: '0.5rem' }}>{erro}</p>
+        )}
 
         <Button
           variant="contained"
