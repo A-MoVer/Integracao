@@ -1,0 +1,709 @@
+version: 1
+directus: 11.7.2
+vendor: sqlite
+
+# -----------------------------------------------------------------------------
+# ROLES
+# -----------------------------------------------------------------------------
+roles:
+  - id: "uuid-para-admin"
+    name: admin
+    description: "Acesso total"
+    icon: "supervisor_account"
+    admin_access: true      # super-administrador
+    app_access: true
+    enforce_tfa: false
+
+  - id: "uuid-para-presidente"
+    name: presidente
+    description: "Gere dados mas não configurações da plataforma"
+    icon: "workspace_premium"
+    admin_access: false
+    app_access: true
+
+  - id: "uuid-para-team_leader"
+    name: team_leader
+    description: "Chefe de equipa"
+    icon: "groups"
+    admin_access: false
+    app_access: true
+
+  - id: "uuid-para-orientador"
+    name: orientador
+    description: "Orientador científico"
+    icon: "school"
+    admin_access: false
+    app_access: true
+
+  - id: "uuid-para-authenticated"
+    name: authenticated
+    description: "Utilizador autenticado (solo leitura)"
+    icon: "person"
+    admin_access: false
+    app_access: true
+
+  - id: "uuid-para-public"
+    name: public
+    description: "Visitante anónimo"
+    icon: "public"
+    admin_access: false
+    app_access: false
+
+# -----------------------------------------------------------------------------
+# COLLECTIONS
+# -----------------------------------------------------------------------------
+collections:
+  # ---------------------------------------------------------------------------
+  # TEAMS
+  # ---------------------------------------------------------------------------
+  - collection: teams
+    icon: group
+    meta:
+      display_template: "{{name}}"
+      note: "Equipas de investigação"
+    schema:
+      name: teams
+      comment: "Equipas / departamentos"
+
+  # ---------------------------------------------------------------------------
+  # ORIENTADORES
+  # ---------------------------------------------------------------------------
+  - collection: orientadores
+    icon: school
+    meta:
+      display_template: "{{first_name}} {{last_name}}"
+      note: "Orientadores científicos"
+    schema:
+      name: orientadores
+      comment: "Investigadores com capacidade de orientação"
+
+  # ---------------------------------------------------------------------------
+  # PERSONS
+  # ---------------------------------------------------------------------------
+  - collection: persons
+    icon: person
+    meta:
+      display_template: "{{first_name}} {{last_name}}"
+      note: "Bolseiros e técnicos"
+    schema:
+      name: persons
+      comment: "Pessoas da organização"
+
+  # ---------------------------------------------------------------------------
+  # PUBLICATIONS
+  # ---------------------------------------------------------------------------
+  - collection: publications
+    icon: article
+    meta:
+      display_template: "{{title}}"
+      note: "Produção científica"
+    schema:
+      name: publications
+      comment: "Publicações científicas"
+
+  # ---------------------------------------------------------------------------
+  # PERSONS_PUBLICATIONS (junction M2M)
+  # ---------------------------------------------------------------------------
+  - collection: persons_publications
+    hidden: true
+    meta:
+      note: "Junction pessoa <-> publicação (autoria)"
+    schema:
+      name: persons_publications
+
+  # ---------------------------------------------------------------------------
+  # PERSONS_COORIENTADORES (junction M2M)
+  # ---------------------------------------------------------------------------
+  - collection: persons_coorientadores
+    hidden: true
+    meta:
+      note: "Junction pessoa <-> co-orientadores"
+    schema:
+      name: persons_coorientadores
+
+  # ---------------------------------------------------------------------------
+  # FELLOWSHIPS
+  # ---------------------------------------------------------------------------
+  - collection: fellowships
+    icon: workspace_premium
+    meta:
+      note: "Bolsas de investigação"
+      display_template: "{{person_id.first_name}} {{person_id.last_name}} ({{funding_program}})"
+    schema:
+      name: fellowships
+      comment: "Histórico de bolsas"
+
+# -----------------------------------------------------------------------------
+# FIELDS
+# Cada registo inclui: collection, field, type, schema.*, meta.* (interface/opções)
+# -----------------------------------------------------------------------------
+fields:
+  # ---------------------- TEAMS ----------------------------------------------
+  - collection: teams
+    field: id
+    type: uuid
+    schema:
+      is_primary_key: true
+      autoGenerate: true
+      is_nullable: false
+    meta:
+      special: ["uuid"]
+      readonly: true
+
+  - collection: teams
+    field: name
+    type: string
+    schema:
+      length: 255
+      is_nullable: false
+
+  - collection: teams
+    field: area
+    type: string
+    schema:
+      length: 255
+
+  - collection: teams
+    field: photo
+    type: uuid
+    schema:
+      is_nullable: true
+    meta:
+      interface: file
+      special: ["file"]
+
+  - collection: teams
+    field: leader
+    type: uuid
+    schema:
+      is_nullable: true
+    meta:
+      interface: dropdown
+      special: ["user"]
+
+  # ---------------------- ORIENTADORES ---------------------------------------
+  - collection: orientadores
+    field: id
+    type: uuid
+    schema:
+      is_primary_key: true
+      autoGenerate: true
+      is_nullable: false
+    meta:
+      special: ["uuid"]
+      readonly: true
+
+  - collection: orientadores
+    field: first_name
+    type: string
+    schema:
+      length: 100
+      is_nullable: false
+
+  - collection: orientadores
+    field: last_name
+    type: string
+    schema:
+      length: 100
+      is_nullable: false
+
+  - collection: orientadores
+    field: email
+    type: string
+    schema:
+      length: 255
+      is_nullable: false
+    meta:
+      interface: input
+      special: ["email"]
+
+  - collection: orientadores
+    field: phone
+    type: string
+    schema:
+      length: 50
+
+  - collection: orientadores
+    field: research_area
+    type: string
+    schema:
+      length: 255
+
+  - collection: orientadores
+    field: photo
+    type: uuid
+    schema:
+      is_nullable: true
+    meta:
+      interface: file
+      special: ["file"]
+
+  # ---------------------- PERSONS -------------------------------------------
+  - collection: persons
+    field: id
+    type: uuid
+    schema:
+      is_primary_key: true
+      autoGenerate: true
+      is_nullable: false
+    meta:
+      special: ["uuid"]
+      readonly: true
+
+  - collection: persons
+    field: person_type
+    type: string
+    schema:
+      length: 15
+      is_nullable: false
+    meta:
+      interface: select-dropdown
+      options:
+        choices:
+          - { text: "Bolseiro", value: "bolseiro" }
+          - { text: "Técnico", value: "técnico" }
+
+  - collection: persons
+    field: first_name
+    type: string
+    schema:
+      length: 100
+      is_nullable: false
+
+  - collection: persons
+    field: last_name
+    type: string
+    schema:
+      length: 100
+      is_nullable: false
+
+  - collection: persons
+    field: academic_level
+    type: string
+    schema:
+      length: 30
+    meta:
+      interface: select-dropdown
+      options:
+        choices:
+          - { text: "Lic.", value: "Lic." }
+          - { text: "Mestrado", value: "Mestrado" }
+          - { text: "Doutoramento", value: "Doutoramento" }
+          - { text: "Pós-Doc", value: "Pós-Doc" }
+
+  - collection: persons
+    field: email
+    type: string
+    schema:
+      length: 255
+    meta:
+      interface: input
+      special: ["email"]
+
+  - collection: persons
+    field: photo
+    type: uuid
+    schema:
+      is_nullable: true
+    meta:
+      interface: file
+      special: ["file"]
+
+  - collection: persons
+    field: team
+    type: uuid
+    schema:
+      is_nullable: true
+    meta:
+      interface: dropdown
+      special: ["relation"]
+
+  - collection: persons
+    field: orientador
+    type: uuid
+    schema:
+      is_nullable: true
+    meta:
+      interface: dropdown
+      special: ["relation"]
+
+  - collection: persons
+    field: co_orientadores
+    type: alias                       # armazenado em junction
+    meta:
+      interface: list-m2m
+      options:
+        maxSelections: 2
+        
+ 
+
+  # ---------------------- PUBLICATIONS --------------------------------------
+  - collection: publications
+    field: id
+    type: uuid
+    schema:
+      is_primary_key: true
+      autoGenerate: true
+      is_nullable: false
+    meta:
+      special: ["uuid"]
+      readonly: true
+
+  - collection: publications
+    field: title
+    type: string
+    schema:
+      length: 500
+      is_nullable: false
+
+  - collection: publications
+    field: type
+    type: string
+    schema:
+      length: 30
+    meta:
+      interface: select-dropdown
+      options:
+        choices:
+          - { text: "Artigo", value: "artigo" }
+          - { text: "Conferência", value: "conferência" }
+          - { text: "Relatório", value: "relatório" }
+          - { text: "Outro", value: "outro" }
+
+  - collection: publications
+    field: abstract
+    type: text
+
+  - collection: publications
+    field: published_on
+    type: date
+
+  - collection: publications
+    field: doi_or_url
+    type: string
+    schema:
+      length: 255
+
+  - collection: publications
+    field: file
+    type: uuid
+    meta:
+      interface: file
+      special: ["file"]
+
+  
+  # ---------------------- PERSONS_PUBLICATIONS (junction) --------------------
+  - collection: persons_publications
+    field: person_id
+    type: uuid
+    schema:
+      is_nullable: false
+    meta:
+      special: ["relation"]
+
+  - collection: persons_publications
+    field: publication_id
+    type: uuid
+    schema:
+      is_nullable: false
+    meta:
+      special: ["relation"]
+
+  - collection: persons_publications
+    field: author_order
+    type: integer
+
+  # ---------------------- PERSONS_COORIENTADORES (junction) ------------------
+  - collection: persons_coorientadores
+    field: person_id
+    type: uuid
+    meta:
+      special: ["relation"]
+
+  - collection: persons_coorientadores
+    field: orientador_id
+    type: uuid
+    meta:
+      special: ["relation"]
+
+  # ---------------------- FELLOWSHIPS ---------------------------------------
+  - collection: fellowships
+    field: id
+    type: uuid
+    schema:
+      is_primary_key: true
+      autoGenerate: true
+      is_nullable: false
+    meta:
+      special: ["uuid"]
+      readonly: true
+
+  - collection: fellowships
+    field: person_id
+    type: uuid
+    meta:
+      special: ["relation"]
+
+  - collection: fellowships
+    field: level
+    type: string
+    schema:
+      length: 30
+    meta:
+      interface: select-dropdown
+      options:
+        choices:
+          - { text: "Lic.", value: "Lic." }
+          - { text: "Mestrado", value: "Mestrado" }
+          - { text: "Doutoramento", value: "Doutoramento" }
+          - { text: "Pós-Doc", value: "Pós-Doc" }
+
+  - collection: fellowships
+    field: team_id
+    type: uuid
+    meta:
+      special: ["relation"]
+
+  - collection: fellowships
+    field: funding_program
+    type: string
+    schema:
+      length: 255
+
+  - collection: fellowships
+    field: value_month
+    type: decimal
+
+  - collection: fellowships
+    field: start_date
+    type: date
+
+  - collection: fellowships
+    field: end_date
+    type: date
+
+  - collection: fellowships
+    field: status
+    type: string
+    schema:
+      length: 20
+    meta:
+      interface: select-dropdown
+      options:
+        choices:
+          - { text: "Activa", value: "activa" }
+          - { text: "Concluída", value: "concluída" }
+          - { text: "Suspensa", value: "suspensa" }
+
+  - collection: fellowships
+    field: renewal_of
+    type: uuid
+    schema:
+      is_nullable: true
+    meta:
+      special: ["relation"]
+
+# -----------------------------------------------------------------------------
+# RELATIONS
+# -----------------------------------------------------------------------------
+relations:
+  # persons.team → teams.id
+  - collection: persons
+    field: team
+    related_collection: teams
+    related_field: id
+    schema:
+      on_delete: cascade
+
+  # persons.orientador → orientadores.id
+  - collection: persons
+    field: orientador
+    related_collection: orientadores
+    related_field: id
+    schema:
+      on_delete: cascade
+
+  # persons_coorientadores.person_id → persons.id
+  - collection: persons_coorientadores
+    field: person_id
+    related_collection: persons
+    related_field: id
+    schema:
+      on_delete: cascade
+
+  # persons_coorientadores.orientador_id → orientadores.id
+  - collection: persons_coorientadores
+    field: orientador_id
+    related_collection: orientadores
+    related_field: id
+    schema:
+      on_delete: cascade
+
+  # persons_publications.person_id → persons.id
+  - collection: persons_publications
+    field: person_id
+    related_collection: persons
+    related_field: id
+    schema:
+      on_delete: cascade
+
+  # persons_publications.publication_id → publications.id
+  - collection: persons_publications
+    field: publication_id
+    related_collection: publications
+    related_field: id
+    schema:
+      on_delete: cascade
+
+  # publications.file → directus_files.id
+  - collection: publications
+    field: file
+    related_collection: directus_files
+    related_field: id
+    schema:
+      on_delete: "SET NULL"
+
+  # teams.photo → directus_files.id
+  - collection: teams
+    field: photo
+    related_collection: directus_files
+    related_field: id
+    schema:
+      on_delete: "SET NULL"
+
+  # orientadores.photo → directus_files.id
+  - collection: orientadores
+    field: photo
+    related_collection: directus_files
+    related_field: id
+    schema:
+      on_delete: "SET NULL"
+
+  # persons.photo → directus_files.id
+  - collection: persons
+    field: photo
+    related_collection: directus_files
+    related_field: id
+    schema:
+      on_delete: "SET NULL"
+
+  # teams.leader → directus_users.id
+  - collection: teams
+    field: leader
+    related_collection: directus_users
+    related_field: id
+    schema:
+      on_delete: "SET NULL"
+
+  # fellowships.person_id → persons.id
+  - collection: fellowships
+    field: person_id
+    related_collection: persons
+    related_field: id
+    schema:
+      on_delete: cascade
+
+  # fellowships.team_id → teams.id
+  - collection: fellowships
+    field: team_id
+    related_collection: teams
+    related_field: id
+    schema:
+      on_delete: cascade
+
+  # fellowships.renewal_of → fellowships.id (self-reference)
+  - collection: fellowships
+    field: renewal_of
+    related_collection: fellowships
+    related_field: id
+    schema:
+      on_delete: "SET NULL"
+
+# -----------------------------------------------------------------------------
+# PERMISSIONS (actualizado)
+# -----------------------------------------------------------------------------
+permissions:
+  # ADMIN – acesso total (incluindo meta-colecções)
+  - role: "uuid-para-admin"
+    collection: "*"
+    action: "*"
+    fields: "*"
+
+  # PRESIDENTE – CRUD total em dados, sem settings
+  - role: "uuid-para-presidente"
+    collection: "!directus_*"
+    action: "*"
+    fields: "*"
+
+  # TEAM_LEADER --------------------------------------------------------------
+  - role: "uuid-para-team_leader"
+    collection: "*"
+    action: "read"
+    fields: "*"
+
+  - role: "uuid-para-team_leader"
+    collection: "publications"
+    action: "create"
+    fields: "*"
+
+  - role: "uuid-para-team_leader"
+    collection: "publications"
+    action: "update"
+    fields: "*"
+    permissions: |
+      {
+        "team": { "_eq": "$CURRENT_USER.team" }
+      }
+
+  - role: "uuid-para-team_leader"
+    collection: "publications"
+    action: "delete"
+    fields: "*"
+    permissions: |
+      {
+        "team": { "_eq": "$CURRENT_USER.team" }
+      }
+
+  # ORIENTADOR ---------------------------------------------------------------
+  - role: "uuid-para-orientador"
+    collection: "*"
+    action: "read"
+    fields: "*"
+
+  - role: "uuid-para-orientador"
+    collection: "publications"
+    action: "update"
+    fields: "*"
+    permissions: |
+      {
+        "persons_publications": {
+          "person_id": {
+            "orientador": { "_eq": "$CURRENT_USER.id" }
+          }
+        }
+      }
+
+  - role: "uuid-para-orientador"
+    collection: "publications"
+    action: "delete"
+    fields: "*"
+    permissions: |
+      {
+        "persons_publications": {
+          "person_id": {
+            "orientador": { "_eq": "$CURRENT_USER.id" }
+          }
+        }
+      }
+
+  # AUTHENTICATED – leitura universal
+  - role: "uuid-para-authenticated"
+    collection: "*"
+    action: "read"
+    fields: "*"
+
+  # PUBLIC – leitura restringida a teams (id, name, area)
+  - role: "uuid-para-public"
+    collection: "teams"
+    action: "read"
+    fields: "id,name,area"

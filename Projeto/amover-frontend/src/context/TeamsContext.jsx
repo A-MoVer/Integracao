@@ -1,38 +1,37 @@
 // src/context/TeamsContext.jsx
-import React, { createContext, useContext, useState } from 'react'
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { getEquipasComMembros } from '../services/directus';
+import Cookies from 'js-cookie';
 
-const TeamsContext = createContext()
+const TeamsContext = createContext();
 
 export function TeamsProvider({ children }) {
-  // MOCK INICIAL: coloque aqui 2 ou 3 equipas para teste
-  const [equipas, setEquipas] = useState([
-    {
-      id: 1,
-      nome: 'Inovação Verde',
-      descricao: 'Desenvolvimento de soluções sustentáveis',
-      membros: [
-        { nome: 'Vanya', cargo: 'Bolseiro', email: 'vanya@example.com', foto: '' },
-      ],
-      status: 'ativo',
-    },
-    {
-      id: 2,
-      nome: 'Mobilidade Elétrica',
-      descricao: 'Soluções de transporte ecológicas',
-      membros: [
-        { nome: 'Carlos', cargo: 'Técnico', email: 'carlos@example.com', foto: '' },
-      ],
-      status: 'ativo',
-    },
-  ])
+  const [equipas, setEquipas] = useState([]);
+
+  useEffect(() => {
+  const token = Cookies.get('token');
+  if (!token) return;
+
+  getEquipasComMembros(token)
+    .then(data => {
+      console.log('🔍 EQUIPAS RECEBIDAS DO DIRECTUS:', data); // ← AQUI
+      setEquipas(data);
+    })
+    .catch(err => {
+      console.error('Erro ao carregar equipas:', err.message);
+      Cookies.remove('token');
+      window.location.reload();
+    });
+}, []);
+
 
   return (
     <TeamsContext.Provider value={{ equipas, setEquipas }}>
       {children}
     </TeamsContext.Provider>
-  )
+  );
 }
 
 export function useTeams() {
-  return useContext(TeamsContext)
+  return useContext(TeamsContext);
 }

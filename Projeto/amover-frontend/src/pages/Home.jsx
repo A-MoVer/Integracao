@@ -1,57 +1,67 @@
-import { Link } from 'react-router-dom';
-import Button from '@mui/material/Button';
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../services/Auth';
+import { useEffect } from 'react'
+import { useNavigate, Link } from 'react-router-dom'
+import { useAuth } from '../services/Auth'
+import { Box, Button, Typography, Paper } from '@mui/material'
 
-function Home() {
-  const { user } = useAuth();
-  const navigate = useNavigate();
+export default function Home() {
+  const { user } = useAuth()
+  const navigate = useNavigate()
 
   useEffect(() => {
-    if (user) navigate('/dashboard', { replace: true });
-  }, [user, navigate]);
+    if (user) navigate('/dashboard', { replace: true })
+  }, [user, navigate])
 
-  if (user) return null;
+  if (user) return null
+
   return (
-    <div
-      style={{
-        height: '100vh',
-        width: '100vw',
+    <Box
+      sx={{
+        minHeight: '100vh',
+        background: 'linear-gradient(to bottom, #d6edea, #e6f5e8)',
         display: 'flex',
-        alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#f2f2f2', // fundo leve
+        alignItems: 'center',
+        px: 2,
+        pt: '80px',
       }}
     >
-      <div
-        style={{
+      <Paper
+        elevation={3}
+        sx={{
+          p: 5,
+          maxWidth: 900,
+          width: '100%',
           textAlign: 'center',
-          backgroundColor: 'white',
-          padding: '3rem',
-          borderRadius: '10px',
-          boxShadow: '0 0 10px rgba(0,0,0,0.1)',
-          maxWidth: '700px',
-          width: '90%',
+          borderRadius: 3,
         }}
       >
-        <h1 style={{ fontSize: '3rem', color: '#2e7d32' }}>
-          Plataforma A-MoVeR
-        </h1>
+        <Typography variant="h3" color="success.main" gutterBottom>
+          Plataforma Interna A-MoVeR
+        </Typography>
 
-        <p className="lead mb-5">
-          A plataforma interna do projeto A-MoVeR permite a colaboração entre
-          bolseiros, técnicos, orientadores e administradores.
-        </p>
+        <Typography variant="body1" sx={{ fontSize: '1.15rem', mb: 3 }}>
+          A plataforma A-MoVeR foi criada para facilitar a colaboração entre bolseiros, técnicos,
+          orientadores e administradores envolvidos no desenvolvimento da mota elétrica
+          do projeto A-MoVeR — Agenda Mobilizadora para o Desenvolvimento de Produtos e Sistemas
+          Inteligentes de Mobilidade Verde.
+        </Typography>
+
+        <Typography variant="body1" sx={{ fontSize: '1.15rem', mb: 3 }}>
+          Aqui podes consultar e gerir as equipas técnicas e científicas, partilhar publicações,
+          acompanhar o progresso do projeto e manter a comunicação entre os vários intervenientes.
+        </Typography>
+
+        <Typography variant="body1" sx={{ fontSize: '1.15rem', mb: 4 }}>
+          O objetivo é garantir uma gestão eficaz e colaborativa de todo o ecossistema do projeto,
+          desde a conceção até à implementação da mota elétrica.
+        </Typography>
 
         <Link to="/equipas" style={{ textDecoration: 'none' }}>
           <Button variant="contained" color="success" size="large">
             Ver Equipas
           </Button>
         </Link>
-      </div>
-    </div>
-  );
+      </Paper>
+    </Box>
+  )
 }
-
-export default Home;

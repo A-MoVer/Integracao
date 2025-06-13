@@ -1,8 +1,10 @@
 // src/pages/Admin.jsx
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'    // ← só importar uma vez
-import { useAuth } from '../context/AuthContext'
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../services/Auth'
 import { useTeams } from '../context/TeamsContext'
+import { createEquipa, createMembro, getEquipasComMembros, getMembrosPorEquipa } from '../services/directus'
+
 import {
   Typography,
   Grid,
@@ -20,77 +22,110 @@ import {
   MenuItem,
 } from '@mui/material'
 
+const descricoesMock = {
+  "Serviços de Baixo-Nível": "Desenvolve os sistemas eletrónicos e mecânicos essenciais da mota, como EFI, ABS, TCS e sensores. Inclui inovação com capacetes de condução óssea para comunicação eficiente.",
+  "Front-End": "Cria as interfaces do display da mota e da app myFULGORA, com base em revisões sistemáticas, grupos focais e definição de personas e cenários.",
+  "Plataforma de Gestão de Ciclo de Vida": "Desenvolve uma plataforma web e mobile para gerir todo o ciclo de vida do motociclo, focando-se em manutenção, sustentabilidade e comunicação entre utilizadores e fabricantes.",
+  "Segurança e Apoio à Operação da Mota": "Foca-se em IA e simulações com sensores para criar sistemas de alerta de colisão, deteção de peões e assistência à condução usando o simulador CARLA.",
+  "Gestão de Sistemas e Integração": "Responsável por gerir e integrar os servidores e serviços necessários ao ecossistema, com Git, armazenamento, serviços web e containers Docker.",
+  "Serviços de Logística": "Explora modelos de previsão de consumo e otimização de rotas. Desenvolve uma plataforma de mobilidade e apoia projetos académicos em engenharia de software.",
+  "Serviços Remotos e Cibersegurança": "Trabalha em funcionalidades remotas como monitorização, diagnóstico, rastreamento GPS e controlo via app, com foco em proteção de dados e segurança contra ataques."
+}
+
 function Admin() {
-  const { user } = useAuth()
+  const { user, token } = useAuth()
   const navigate = useNavigate()
   const { equipas, setEquipas } = useTeams()
 
   const [open, setOpen] = useState(false)
-  const [etapa, setEtapa] = useState(null) // 1 = criar equipa, 2 = adicionar membro
+  const [etapa, setEtapa] = useState(null)
   const [novaEquipa, setNovaEquipa] = useState({ nome: '', descricao: '' })
   const [membro, setMembro] = useState({ nome: '', email: '', foto: '', role: '', equipa: '' })
-
   const [message, setMessage] = useState('')
   const [openSnackbar, setOpenSnackbar] = useState(false)
+
+  const roleName = user?.role?.name?.toLowerCase?.() || ''
+
+  if (roleName !== 'presidente') {
+    return (
+      <Box sx={{ pt: 12, textAlign: 'center' }}>
+        <Typography variant="h4">⚠️ Acesso restrito</Typography>
+        <Typography>Esta área é exclusiva para o Presidente da Bolsa.</Typography>
+      </Box>
+    )
+  }
+
+  useEffect(() => {
+    async function fetchEquipas() {
+      try {
+        const data = await getEquipasComMembros(token)
+        const equipasComMembros = await Promise.all(
+          data.map(async (equipa) => {
+            const membros = await getMembrosPorEquipa(equipa.id).catch(() => [])
+            return { ...equipa, membros }
+          })
+        )
+        setEquipas(equipasComMembros)
+      } catch (err) {
+        console.error('Erro ao carregar equipas:', err)
+      }
+    }
+    if (token) fetchEquipas()
+  }, [token])
 
   const handleOpen = (step = 1) => {
     setEtapa(step)
     setOpen(true)
   }
+
   const handleClose = () => setOpen(false)
 
-  // 1) Criar equipa
-  const handleSubmitEquipa = e => {
+  const handleSubmitEquipa = async e => {
     e.preventDefault()
-    const id = Date.now()
-    const nova = { ...novaEquipa, id, membros: [], status: 'ativo' }
-    setEquipas([...equipas, nova])
-    setNovaEquipa({ nome: '', descricao: '' })
-    setMessage('Equipa criada com sucesso!')
+    try {
+      const nova = await createEquipa(novaEquipa, token)
+      setEquipas([...equipas, nova])
+      setMessage('Equipa criada com sucesso!')
+    } catch (err) {
+      console.error(err)
+      setMessage('Erro ao criar equipa!')
+    }
     setOpenSnackbar(true)
     handleClose()
   }
 
-  // 2) Adicionar membro
-  const handleAddMembro = () => {
-    setEquipas(
-      equipas.map(eq =>
-        eq.id === membro.equipa
-          ? {
-              ...eq,
-              membros: [
-                ...eq.membros,
-                { nome: membro.nome, cargo: membro.role, email: membro.email, foto: membro.foto },
-              ],
-            }
-          : eq
+  const handleAddMembro = async () => {
+    try {
+      const novoMembro = await createMembro(membro, token)
+      setEquipas(
+        equipas.map(eq =>
+          eq.id === membro.equipa
+            ? { ...eq, membros: [...(eq.membros || []), novoMembro] }
+            : eq
+        )
       )
-    )
-    setMembro({ nome: '', email: '', foto: '', role: '', equipa: '' })
-    setMessage('Membro adicionado com sucesso!')
+      setMessage('Membro adicionado com sucesso!')
+    } catch (err) {
+      console.error(err)
+      setMessage('Erro ao adicionar membro!')
+    }
     setOpenSnackbar(true)
+    setMembro({ nome: '', email: '', foto: '', role: '', equipa: '' })
     handleClose()
   }
 
-  // 3) Ativar/Desativar
   const handleToggleStatus = id => {
     const eq = equipas.find(e => e.id === id)
-    if (
-      !window.confirm(
-        `Tem certeza que deseja ${eq.status === 'ativo' ? 'desativar' : 'ativar'} esta equipa?`
-      )
-    )
-      return
+    if (!window.confirm(`Tem certeza que deseja ${eq.Status === 'ativo' ? 'desativar' : 'ativar'} esta equipa?`)) return
     setEquipas(
       equipas.map(e =>
-        e.id === id ? { ...e, status: e.status === 'ativo' ? 'desativado' : 'ativo' } : e
+        e.id === id ? { ...e, Status: e.Status === 'ativo' ? 'desativado' : 'ativo' } : e
       )
     )
-    setMessage(`Equipa ${eq.status === 'ativo' ? 'desativada' : 'ativada'} com sucesso!`)
+    setMessage(`Equipa ${eq.Status === 'ativo' ? 'desativada' : 'ativada'} com sucesso!`)
     setOpenSnackbar(true)
   }
 
-  // 4) Excluir
   const handleExcluirEquipa = id => {
     if (!window.confirm('Tem certeza que deseja excluir esta equipa?')) return
     setEquipas(equipas.filter(e => e.id !== id))
@@ -102,28 +137,20 @@ function Admin() {
     setMembro(prev => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
-  if (user?.role !== 'presidente') {
-    return (
-      <Box sx={{ pt: 12, textAlign: 'center' }}>
-        <Typography variant="h4">⚠️ Acesso restrito</Typography>
-        <Typography>Esta área é exclusiva para o Presidente da Bolsa.</Typography>
-      </Box>
-    )
-  }
-
   return (
     <Box sx={{ pt: 12, px: 2 }}>
       <Typography variant="h3" align="center" color="success.main" gutterBottom>
         Área de Administração
       </Typography>
 
-      {/* GRID DE CARTÕES */}
       <Grid container spacing={4} justifyContent="center">
         {equipas.map(equipa => (
           <Grid item xs={12} sm={6} md={4} key={equipa.id}>
             <Card
               onClick={() => navigate(`/equipas/${equipa.id}`)}
               sx={{
+                maxWidth: 360,
+                mx: 'auto',
                 boxShadow: 3,
                 borderRadius: 2,
                 p: 2,
@@ -134,21 +161,33 @@ function Admin() {
             >
               <CardContent>
                 <Typography variant="h5" color="success.main">
-                  {equipa.nome}
+                  {equipa.Nome || equipa.name}
                 </Typography>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  {equipa.descricao}
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  gutterBottom
+                  sx={{
+                    maxHeight: 60,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    display: '-webkit-box',
+                    WebkitLineClamp: 3,
+                    WebkitBoxOrient: 'vertical',
+                  }}
+                >
+                  {equipa.Descricao || descricoesMock[equipa.Nome] || equipa.area || 'Sem descrição'}
                 </Typography>
+
                 <Typography variant="subtitle1">
-                  Nº de Membros: {equipa.membros.length}
+                  Nº de Membros: {equipa.membros?.length || 0}
                 </Typography>
                 <Typography variant="subtitle2" color="text.secondary">
-                  Status: {equipa.status === 'ativo' ? 'Ativo' : 'Desativado'}
+                  Status: {equipa.Status === 'ativo' ? 'Ativo' : 'Desativado'}
                 </Typography>
               </CardContent>
             </Card>
 
-            {/* BOTÕES EXCLUIR / ATIVAR */}
             <Box sx={{ textAlign: 'center', mt: 1 }}>
               <Button
                 variant="outlined"
@@ -164,21 +203,20 @@ function Admin() {
               </Button>
               <Button
                 variant="outlined"
-                color={equipa.status === 'ativo' ? 'warning' : 'success'}
+                color={equipa.Status === 'ativo' ? 'warning' : 'success'}
                 size="small"
                 onClick={e => {
                   e.stopPropagation()
                   handleToggleStatus(equipa.id)
                 }}
               >
-                {equipa.status === 'ativo' ? 'Desativar' : 'Ativar'}
+                {equipa.Status === 'ativo' ? 'Desativar' : 'Ativar'}
               </Button>
             </Box>
           </Grid>
         ))}
       </Grid>
 
-      {/* BOTÕES CRIAR */}
       <Box sx={{ textAlign: 'center', mt: 4 }}>
         <Button variant="contained" color="success" onClick={() => handleOpen(1)}>
           Criar Nova Equipa
@@ -193,7 +231,6 @@ function Admin() {
         </Button>
       </Box>
 
-      {/* MODAL CRIAR / ADICIONAR */}
       <Modal open={open} onClose={handleClose}>
         <Box
           component={etapa === 1 ? 'form' : 'div'}
@@ -261,7 +298,7 @@ function Admin() {
                 >
                   {equipas.map(eq => (
                     <MenuItem key={eq.id} value={eq.id}>
-                      {eq.nome}
+                      {eq.Nome || eq.name}
                     </MenuItem>
                   ))}
                 </Select>
@@ -276,11 +313,7 @@ function Admin() {
         </Box>
       </Modal>
 
-      {/* SNACKBAR */}
-      <Snackbar
-        open={openSnackbar} autoHideDuration={3000}
-        onClose={() => setOpenSnackbar(false)}
-      >
+      <Snackbar open={openSnackbar} autoHideDuration={3000} onClose={() => setOpenSnackbar(false)}>
         <Alert severity="success" sx={{ width: '100%' }} onClose={() => setOpenSnackbar(false)}>
           {message}
         </Alert>
@@ -288,4 +321,5 @@ function Admin() {
     </Box>
   )
 }
-export default Admin;
+
+export default Admin

@@ -1,91 +1,99 @@
-import { useState } from 'react';
-import { useAuth } from '../services/Auth';
-import { useNavigate } from 'react-router-dom';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
+import { useState } from 'react'
+import { useAuth } from '../services/Auth'
+import { useNavigate } from 'react-router-dom'
 
-function Login() {
-  const [email, setEmail] = useState('');
-  const [senha, setSenha] = useState('');
-  const [erro, setErro]  = useState('');
-  const { login } = useAuth();
-  const navigate = useNavigate();
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Paper
+} from '@mui/material'
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  console.log('[Login] Submitting →', { email, senha });      // ① dispara?
+export default function Login() {
+  const [email, setEmail] = useState('')
+  const [senha, setSenha] = useState('')
+  const [erro, setErro] = useState('')
+  const { login } = useAuth()
+  const navigate = useNavigate()
 
-  const ok = await login(email, senha);
-  console.log('[Login] Resultado de login →', ok);            // ② chega cá?
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    console.log('[Login] Submitting →', { email, senha })
 
-  if (ok) navigate('/dashboard');
-  else     setErro('Credenciais inválidas');
-};
+    const ok = await login(email, senha)
+    console.log('[Login] Resultado de login →', ok)
+
+    if (ok) navigate('/dashboard')
+    else setErro('Credenciais inválidas')
+  }
 
   return (
-    <div
-      style={{
-        height: '100vh',
-        width: '100vw',
+    <Box
+      sx={{
+        minHeight: '100vh',
+        background: 'linear-gradient(to bottom, #cbeae7, #d9f2da)',
         display: 'flex',
-        alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#f2f2f2',
-        paddingTop: '80px', // compensar navbar
+        alignItems: 'center',
+        px: 2,
+        pt: '80px' // Compensar navbar fixa
       }}
     >
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          backgroundColor: 'white',
-          padding: '3rem',
-          borderRadius: '10px',
-          boxShadow: '0 0 10px rgba(0,0,0,0.1)',
-          maxWidth: '400px',
-          width: '90%',
+      <Paper
+        elevation={3}
+        sx={{
+          p: 4,
+          width: '100%',
+          maxWidth: 400,
           textAlign: 'center',
+          borderRadius: 3,
         }}
       >
-        <h2 className="mb-4">Iniciar Sessão</h2>
+        <Typography variant="h5" gutterBottom>
+          Iniciar Sessão
+        </Typography>
 
-        <TextField
-          label="Email"
-          type="email"
-          variant="outlined"
-          fullWidth
-          required
-          margin="normal"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+        <form onSubmit={handleSubmit}>
+          <TextField
+            label="Email"
+            type="email"
+            variant="outlined"
+            fullWidth
+            required
+            margin="normal"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
-        <TextField
-          label="Senha"
-          type="password"
-          variant="outlined"
-          fullWidth
-          required
-          margin="normal"
-          value={senha}
-          onChange={(e) => setSenha(e.target.value)}
-        />
+          <TextField
+            label="Senha"
+            type="password"
+            variant="outlined"
+            fullWidth
+            required
+            margin="normal"
+            value={senha}
+            onChange={(e) => setSenha(e.target.value)}
+          />
 
-        {erro && (
-          <p style={{ color: 'red', marginTop: '0.5rem' }}>{erro}</p>
-        )}
+          {erro && (
+            <Typography color="error" sx={{ mt: 1 }}>
+              {erro}
+            </Typography>
+          )}
 
-        <Button
-          variant="contained"
-          color="success"
-          type="submit"
-          fullWidth
-          className="mt-3"
-        >
-          Entrar
-        </Button>
-      </form>
-    </div>
-  );
+          <Button
+            variant="contained"
+            color="success"
+            type="submit"
+            fullWidth
+            sx={{ mt: 3 }}
+          >
+            Entrar
+          </Button>
+        </form>
+      </Paper>
+    </Box>
+  )
 }
-
-export default Login;

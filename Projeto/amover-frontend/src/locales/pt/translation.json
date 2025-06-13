@@ -1,0 +1,10 @@
+{
+  "welcome": "Bem-vindo, {{name}}",
+  "new_publication": "Nova Publicação",
+  "edit_profile": "Editar Perfil",
+  "logout": "Logout",
+  "drafts": "Rascunhos",
+  "teams": "Equipas",
+  "my_publications": "Minhas Publicações",
+  "personal_data": "Dados Pessoais"
+}

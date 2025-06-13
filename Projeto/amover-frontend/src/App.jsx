@@ -1,19 +1,17 @@
-// src/App.jsx
 import { Routes, Route } from 'react-router-dom';
 import { Box, Toolbar } from '@mui/material';
 
 import Navbar from './components/Navbar';
-import PublicationsFeed from './components/PublicationsFeed';
-import DraftsFeed from './components/DraftsFeed';
-import CreatePublication from './components/CreatePublication';
-import PublicationDetail from './pages/PublicationDetail';
 
 import Home from './pages/Home';
 import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
-import Equipas from './pages/Equipas';
-import EquipasDetails from './pages/EquipasDetails';
-import Admin from './pages/Admin';
+import NewPublication from './pages/NewPublication'; // <- usar a nova versão
+import Equipas from './pages/Equipas'
+
+import PrivateLayout from './components/PrivateLayout';
+
+import './App.css';
+import './i18n';
 
 export default function App() {
   return (
@@ -26,21 +24,14 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
 
-          {/* Dashboard */}
-          <Route path="/dashboard" element={<Dashboard />} />
-
-          {/* Equipas */}
+          {/* Página pública de listagem de equipas */}
           <Route path="/equipas" element={<Equipas />} />
-          <Route path="/equipas/:id" element={<EquipasDetails />} />
 
-          {/* Admin */}
-          <Route path="/admin" element={<Admin />} />
+          {/* Página de criação de publicações */}
+          <Route path="/publicacoes/novo" element={<NewPublication />} />
 
-          {/* Publicações */}
-          <Route path="/publicacoes" element={<PublicationsFeed />} />
-          <Route path="/rascunhos" element={<DraftsFeed />} />
-          <Route path="/publicacoes/novo" element={<CreatePublication />} />
-          <Route path="/publicacoes/:id" element={<PublicationDetail />} />
+          {/* Páginas privadas com layout interno */}
+          <Route path="/*" element={<PrivateLayout />} />
         </Routes>
       </Box>
     </>

@@ -1,58 +1,55 @@
-// src/components/Navbar.jsx
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../services/Auth';
 import Button from '@mui/material/Button';
+import logoAmover from '../assets/logo_amover.png';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
-  const navigate = useNavigate();       // ← import e hook para navegação
-  const location = useLocation();       // sabemos em que rota estamos
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = () => {
-    logout();                           // limpa sessão/token
-    navigate('/');                      // redireciona para a home pública
+    logout();
+    navigate('/');
   };
 
   return (
-    <nav className="navbar navbar-expand-lg bg-white shadow-sm fixed-top">
-      <div className="container-fluid">
-        {/* Marca da plataforma */}
+    <nav
+      className="navbar navbar-expand-lg shadow-sm fixed-top"
+      style={{
+        backgroundColor: '#004d40',
+        zIndex: 2000 // garante que fica por cima da sidebar
+      }}
+    >
+      <div className="container-fluid d-flex justify-content-between align-items-center">
+        {/* Logo clicável */}
         <Link
           to={user ? "/dashboard" : "/"}
-          className="navbar-brand fw-bold text-success fs-4 text-decoration-none"
+          className="navbar-brand d-flex align-items-center text-decoration-none"
         >
-          Plataforma A-MoVeR
+          <img
+            src={logoAmover}
+            alt="Logo A-MoVeR"
+            style={{ height: 48 }}
+          />
         </Link>
 
-        {/* Botões da navbar */}
-        <div className="ms-auto d-flex align-items-center">
-          {user ? (
-            <>
-              <span className="me-3">
-                Bem‑vindo/a, {user.email} ({user.role?.name})
-              </span>
-              <Button variant="outlined" color="success" onClick={handleLogout}>
-                Logout
+        <div className="d-flex align-items-center ms-auto">
+          {user ? null : location.pathname !== '/login' && (
+            <Link to="/login" className="text-decoration-none">
+              <Button
+                variant="outlined"
+                style={{ color: 'white', borderColor: 'white' }}
+                sx={{
+                  '&:hover': {
+                    backgroundColor: '#00695c',
+                    borderColor: 'white'
+                  }
+                }}
+              >
+                Login
               </Button>
-
-              {/* Botão Administração aparece apenas se for presidente */}
-              {user.role?.name === 'presidente' && (
-                <Link to="/admin" className="ms-3 text-decoration-none">
-                  <Button variant="outlined" color="success">
-                    Administração
-                  </Button>
-                </Link>
-              )}
-            </>
-          ) : (
-            // Se não estiver no /login, mostra Login
-            location.pathname !== '/login' && (
-              <Link to="/login" style={{ textDecoration: 'none' }}>
-                <Button variant="contained" color="success">
-                  Login
-                </Button>
-              </Link>
-            )
+            </Link>
           )}
         </div>
       </div>
